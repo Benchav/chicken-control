@@ -6,6 +6,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import Dashboard from "./pages/Dashboard";
+import LotesPage from "./pages/LotesPage";
+import PollosPage from "./pages/PollosPage";
+import SaludPage from "./pages/SaludPage";
+import AlertasPage from "./pages/AlertasPage";
+import ReportesPage from "./pages/ReportesPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,11 +34,11 @@ const App = () => (
               <main className="flex-1 overflow-auto">
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
-                  <Route path="/lotes" element={<div className="p-6">Gestión de Lotes - En desarrollo</div>} />
-                  <Route path="/pollos" element={<div className="p-6">Gestión de Pollos - En desarrollo</div>} />
-                  <Route path="/salud" element={<div className="p-6">Monitoreo de Salud - En desarrollo</div>} />
-                  <Route path="/alertas" element={<div className="p-6">Predicciones y Alertas - En desarrollo</div>} />
-                  <Route path="/reportes" element={<div className="p-6">Reportes - En desarrollo</div>} />
+                  <Route path="/lotes" element={<LotesPage />} />
+                  <Route path="/pollos" element={<PollosPage />} />
+                  <Route path="/salud" element={<SaludPage />} />
+                  <Route path="/alertas" element={<AlertasPage />} />
+                  <Route path="/reportes" element={<ReportesPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
