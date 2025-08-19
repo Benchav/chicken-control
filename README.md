@@ -1,4 +1,6 @@
 # Welcome to your Lovable project
+email: oscarmolinatest7@yopmail.com 
+password: 123456789
 
 ## Project info
 
