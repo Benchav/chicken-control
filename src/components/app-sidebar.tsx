@@ -48,7 +48,7 @@ export function AppSidebar() {
       : "hover:bg-muted/80 transition-colors"
 
   return (
-    <Sidebar className="border-r border-border bg-card">
+    <Sidebar className="border-r border-border bg-card w-full md:w-[15rem]">
       <SidebarHeader className="p-4 border-b border-border">
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center">
