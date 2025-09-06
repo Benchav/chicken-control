@@ -54,7 +54,7 @@ export function AppSidebar() {
   const SidebarContentItems = () => (
     <SidebarContent>
       <SidebarGroup>
-        <SidebarGroupLabel>Gestión</SidebarGroupLabel>
+        {state === "expanded" && <SidebarGroupLabel>Gestión</SidebarGroupLabel>}
         <SidebarGroupContent>
           <SidebarMenu>
             {items.map((item) => (
@@ -83,7 +83,7 @@ export function AppSidebar() {
       {/* Desktop Sidebar */}
       <div className="hidden md:block">
         <Sidebar className="border-r border-border bg-card">
-          <SidebarHeader className="p-4 border-b border-border">
+          <SidebarHeader className="p-2 border-b border-border">
             <div className="flex items-center gap-3">
               <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center">
                 <Bird className="h-5 w-5 text-white" />
@@ -109,8 +109,12 @@ export function AppSidebar() {
             <Bird className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-foreground text-white">Avicon</h2>
-            <p className="text-sm text-muted-foreground text-white">Sistema de Control</p>
+            <h2 className="text-lg font-bold text-foreground text-white">
+              Avicon
+            </h2>
+            <p className="text-sm text-muted-foreground text-white">
+              Sistema de Control
+            </p>
           </div>
         </div>
         <Sheet open={open} onOpenChange={setOpen}>
