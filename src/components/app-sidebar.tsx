@@ -82,7 +82,7 @@ export function AppSidebar() {
     <>
       {/* Desktop Sidebar */}
       <div className="hidden md:block">
-        <Sidebar className="border-r border-border bg-card w-[15rem]">
+        <Sidebar className="border-r border-border bg-card">
           <SidebarHeader className="p-4 border-b border-border">
             <div className="flex items-center gap-3">
               <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center">
