@@ -28,7 +28,7 @@ const App = () => (
               <header className="h-14 flex items-center border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
                 <SidebarTrigger className="mr-4" />
                 <div className="flex items-center gap-2">
-                  <h1 className="font-semibold text-foreground">ChickenWatch</h1>
+                  <h1 className="font-semibold text-foreground">Avicon</h1>
                 </div>
               </header>
               <main className="flex-1 overflow-auto">
