@@ -26,7 +26,7 @@ const App = () => (
             <AppSidebar />
             <div className="flex md:hidden h-[3.5rem]"/>
             <div className="flex-1 flex flex-col">
-              <header className="h-14 flex items-center border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
+              <header className="h-14 hidden md:flex items-center border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
                 <SidebarTrigger className="mr-4" />
                 <div className="flex items-center gap-2">
                   <h1 className="font-semibold text-foreground">Avicon</h1>
