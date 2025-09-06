@@ -56,7 +56,7 @@ export function AppSidebar() {
           </div>
           {state === "expanded" && (
             <div>
-              <h2 className="text-lg font-bold text-foreground">ChickenWatch</h2>
+              <h2 className="text-lg font-bold text-foreground">Avicon</h2>
               <p className="text-sm text-muted-foreground">Sistema de Control</p>
             </div>
           )}
