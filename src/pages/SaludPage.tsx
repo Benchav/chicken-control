@@ -436,7 +436,7 @@ export default function SaludPage() {
 
       {/* Tabs Content */}
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="flex flex-row md:grid md:grid-cols-3 justify-around overflow-x-auto">
           <TabsTrigger value="registros">Registros Médicos</TabsTrigger>
           <TabsTrigger value="estadisticas">Estadísticas</TabsTrigger>
           <TabsTrigger value="alertas">Alertas de Salud</TabsTrigger>
