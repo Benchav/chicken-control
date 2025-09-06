@@ -202,7 +202,7 @@ export default function ReportesPage() {
 
       {/* Tabs Content */}
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="flex flex-row md:grid md:grid-cols-4 justify-around overflow-x-auto">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="produccion">Producción</TabsTrigger>
           <TabsTrigger value="financiero">Financiero</TabsTrigger>
