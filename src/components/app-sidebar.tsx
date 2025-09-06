@@ -103,7 +103,7 @@ export function AppSidebar() {
       </div>
 
       {/* Mobile Sidebar */}
-      <div className="md:hidden flex flex-row justify-between bg-success">
+      <div className="md:hidden flex flex-row justify-between bg-success fixed top-0 left-0 right-0 z-50 transition-all duration-300">
         <div className="flex items-center gap-3 px-2">
           <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center">
             <Bird className="h-5 w-5 text-white" />
