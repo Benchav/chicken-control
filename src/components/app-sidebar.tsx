@@ -81,7 +81,7 @@ export function AppSidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="hidden md:block">
+      <div className="hidden md:block h-screen">
         <Sidebar className="border-r border-border bg-card">
           <SidebarHeader className="p-2 border-b border-border">
             <div className="flex items-center gap-3">

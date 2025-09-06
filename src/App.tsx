@@ -23,8 +23,10 @@ const App = () => (
       <BrowserRouter>
         <SidebarProvider defaultOpen={true}>
           <div className="min-h-screen flex flex-col md:flex-row w-full">
-            <AppSidebar />
-            <div className="flex md:hidden h-[3.5rem]"/>
+            <div className="sticky top-0 self-start z-50">
+              <AppSidebar />
+            </div>
+            <div className="flex md:hidden h-[3.5rem]" />
             <div className="flex-1 flex flex-col">
               <header className="h-14 hidden md:flex items-center border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
                 <SidebarTrigger className="mr-4" />
