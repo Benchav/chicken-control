@@ -21,7 +21,7 @@ import {
   SidebarHeader,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
 const items = [
@@ -123,6 +123,7 @@ export function AppSidebar() {
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
+          <SheetTitle className="hidden">Panel de configuración</SheetTitle>
           <SheetContent side="left" className="p-0">
             <Sidebar className="border-r border-border bg-card w-full">
               <SidebarHeader className="p-4 border-b border-border">
