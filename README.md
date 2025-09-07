@@ -31,9 +31,16 @@
 <h2 align="left">🚀 Ejecución</h2>
 
 ###
-
-<p align="left">git clone https://github.com/oscarMolina1523/chicken-control.git<br>cd chicken-control<br>npm install<br>npm run dev</p>
-
+```bash
+#clonar el reposito en local
+git clone https://github.com/oscarMolina1523/chicken-control.git
+#navegar en la carpeta
+cd chicken-control
+#instalar dependencias
+npm install
+#correr el proyecto en local
+npm run dev
+```
 ###
 
 <h2 align="left">📂 Estructura del proyecto</h2>
@@ -47,9 +54,11 @@
 <h2 align="left">🛠️ Scripts útiles</h2>
 
 ###
-
-<p align="left">npm run dev → Modo desarrollo<br><br>npm run build → Compila para producción<br><br>npm run preview → Vista previa de la build</p>
-
+```bash
+npm run dev #→ Modo desarrollo
+npm run build #→ Compila para producción
+npm run preview #→ Vista previa de la build
+```
 ###
 
 <h2 align="left">✨ Autores</h2>
