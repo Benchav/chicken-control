@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Download, FileText, BarChart3, PieChart, Calendar, TrendingUp, Printer } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Cell } from "recharts"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Cell, Pie } from "recharts"
 
 interface ReporteData {
   periodo: string
@@ -312,11 +312,11 @@ export default function ReportesPage() {
                           borderRadius: "var(--radius)"
                         }}
                       />
-                      <RechartsPieChart dataKey="valor" data={distribucionMortalidad} cx="50%" cy="50%" outerRadius={80}>
+                      <Pie dataKey="valor" data={distribucionMortalidad} cx="50%" cy="50%" outerRadius={80}>
                         {distribucionMortalidad.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
-                      </RechartsPieChart>
+                      </Pie>
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
