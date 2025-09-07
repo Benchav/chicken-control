@@ -704,7 +704,7 @@ export default function ReportesPage() {
                 </div>
               </div>
 
-              <div className="mt-6 flex gap-2">
+              <div className="mt-6 flex flex-wrap gap-2">
                 <Button className="gap-2">
                   <Calendar className="h-4 w-4" />
                   Programar Reporte Automático
