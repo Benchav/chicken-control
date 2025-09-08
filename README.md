@@ -8,7 +8,7 @@
 
 ###
 
-<p align="left">Avicon Frontend es una aplicación web moderna y responsiva para la gestión de granjas avícolas.  <br>Incluye dashboards, paneles de control, reportes y administración de entidades clave (pollos, lotes, alimentación, salud y producción).</p>
+<p align="left">Avicon Frontend es una aplicación web moderna y responsiva para la gestión de granjas avícolas.  <br>Incluye dashboards, paneles de control, reportes y administración de entidades clave (pollos, lotes, alimentación, salud y producción).Además con posibilidad de integrar herramientas de IA</p>
 
 ###
 
