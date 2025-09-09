@@ -12,6 +12,11 @@
 
 ###
 
+<h2 align="left">✅ Manual de Usuario</h2>
+<p align="left">Hemos creado un manual de usuario sencillo para guiarte por cada una de las secciones y puedas sacarle el maximo provecho, hemos hecho uso de la herramiento Notion para documentar , para ver el manual haz click en el enlace: https://oscarmolina.notion.site/Avicon-Manual-de-Usuario-2677c9c9fb1780b1964eec56308b1cfc.</p>
+
+###
+
 <h2 align="left">📌 Funcionalidades</h2>
 
 ###
