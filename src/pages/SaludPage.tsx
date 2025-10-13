@@ -1,130 +1,174 @@
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Stethoscope, Pill, Activity, AlertTriangle, TrendingUp, Calendar } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Plus,
+  Stethoscope,
+  Pill,
+  Activity,
+  AlertTriangle,
+  TrendingUp,
+  Calendar,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from "recharts";
+import { RegistroSalud } from "@/models/healthRegister.model";
+import { registrosData } from "@/data/healthRegister.data";
+import { RecordType } from "@/models/recordType.model";
+import { sintomasComunes } from "@/data/commonSymptoms.data";
+import { medicamentosComunes } from "@/data/commonMedications.data";
+import { estadisticasData } from "@/data/healthStatistics.data";
+import { lotesData } from "@/data/lotes.data";
 
-interface RegistroSalud {
-  id: string
-  polloId: string
-  polloIdentificador: string
-  lote: string
-  fecha: string
-  tipoRegistro: "revision" | "enfermedad" | "tratamiento" | "vacunacion"
-  sintomas: string[]
-  diagnostico: string
-  tratamiento: string
-  medicamento: string
-  dosis: string
-  veterinario: string
-  proximaRevision?: string
-  observaciones: string
-}
+// interface RegistroSalud {
+//   id: string
+//   polloId: string
+//   polloIdentificador: string
+//   lote: string
+//   fecha: string
+//   tipoRegistro: "revision" | "enfermedad" | "tratamiento" | "vacunacion"
+//   sintomas: string[]
+//   diagnostico: string
+//   tratamiento: string
+//   medicamento: string
+//   dosis: string
+//   veterinario: string
+//   proximaRevision?: string
+//   observaciones: string
+// }
 
-interface EstadisticaSalud {
-  fecha: string
-  sanos: number
-  enfermos: number
-  recuperados: number
-  muertos: number
-}
+// interface EstadisticaSalud {
+//   fecha: string
+//   sanos: number
+//   enfermos: number
+//   recuperados: number
+//   muertos: number
+// }
 
-const mockRegistros: RegistroSalud[] = [
-  {
-    id: "1",
-    polloId: "2",
-    polloIdentificador: "A002",
-    lote: "Lote A - Ene 2024",
-    fecha: "2024-02-20",
-    tipoRegistro: "enfermedad",
-    sintomas: ["Respiración dificultosa", "Secreción nasal", "Letargo"],
-    diagnostico: "Infección respiratoria leve",
-    tratamiento: "Antibiótico oral + aislamiento",
-    medicamento: "Enrofloxacina",
-    dosis: "10mg/kg durante 5 días",
-    veterinario: "Dr. María González",
-    proximaRevision: "2024-02-25",
-    observaciones: "Mejoría notable después de 2 días de tratamiento"
-  },
-  {
-    id: "2",
-    polloId: "1",
-    polloIdentificador: "A001",
-    lote: "Lote A - Ene 2024", 
-    fecha: "2024-02-18",
-    tipoRegistro: "revision",
-    sintomas: [],
-    diagnostico: "Estado de salud normal",
-    tratamiento: "Ninguno",
-    medicamento: "",
-    dosis: "",
-    veterinario: "Dr. Carlos Ruiz",
-    observaciones: "Desarrollo dentro de parámetros normales"
-  },
-  {
-    id: "3",
-    polloId: "3",
-    polloIdentificador: "B001",
-    lote: "Lote B - Dic 2023",
-    fecha: "2024-02-19",
-    tipoRegistro: "vacunacion", 
-    sintomas: [],
-    diagnostico: "Vacunación preventiva",
-    tratamiento: "Vacuna Newcastle",
-    medicamento: "Vacuna Newcastle La Sota",
-    dosis: "0.5ml vía ocular",
-    veterinario: "Dr. María González",
-    observaciones: "Vacunación de refuerzo completada sin complicaciones"
-  }
-]
+// const mockRegistros: RegistroSalud[] = [
+//   {
+//     id: "1",
+//     polloId: "2",
+//     polloIdentificador: "A002",
+//     lote: "Lote A - Ene 2024",
+//     fecha: "2024-02-20",
+//     tipoRegistro: "enfermedad",
+//     sintomas: ["Respiración dificultosa", "Secreción nasal", "Letargo"],
+//     diagnostico: "Infección respiratoria leve",
+//     tratamiento: "Antibiótico oral + aislamiento",
+//     medicamento: "Enrofloxacina",
+//     dosis: "10mg/kg durante 5 días",
+//     veterinario: "Dr. María González",
+//     proximaRevision: "2024-02-25",
+//     observaciones: "Mejoría notable después de 2 días de tratamiento"
+//   },
+//   {
+//     id: "2",
+//     polloId: "1",
+//     polloIdentificador: "A001",
+//     lote: "Lote A - Ene 2024",
+//     fecha: "2024-02-18",
+//     tipoRegistro: "revision",
+//     sintomas: [],
+//     diagnostico: "Estado de salud normal",
+//     tratamiento: "Ninguno",
+//     medicamento: "",
+//     dosis: "",
+//     veterinario: "Dr. Carlos Ruiz",
+//     observaciones: "Desarrollo dentro de parámetros normales"
+//   },
+//   {
+//     id: "3",
+//     polloId: "3",
+//     polloIdentificador: "B001",
+//     lote: "Lote B - Dic 2023",
+//     fecha: "2024-02-19",
+//     tipoRegistro: "vacunacion",
+//     sintomas: [],
+//     diagnostico: "Vacunación preventiva",
+//     tratamiento: "Vacuna Newcastle",
+//     medicamento: "Vacuna Newcastle La Sota",
+//     dosis: "0.5ml vía ocular",
+//     veterinario: "Dr. María González",
+//     observaciones: "Vacunación de refuerzo completada sin complicaciones"
+//   }
+// ]
 
-const mockEstadisticas: EstadisticaSalud[] = [
-  { fecha: "2024-02-15", sanos: 2820, enfermos: 15, recuperados: 8, muertos: 2 },
-  { fecha: "2024-02-16", sanos: 2815, enfermos: 18, recuperados: 12, muertos: 3 },
-  { fecha: "2024-02-17", sanos: 2810, enfermos: 22, recuperados: 15, muertos: 3 },
-  { fecha: "2024-02-18", sanos: 2805, enfermos: 25, recuperados: 18, muertos: 4 },
-  { fecha: "2024-02-19", sanos: 2800, enfermos: 28, recuperados: 22, muertos: 5 },
-  { fecha: "2024-02-20", sanos: 2760, enfermos: 62, recuperados: 25, muertos: 3 }
-]
+// const mockEstadisticas: EstadisticaSalud[] = [
+//   { fecha: "2024-02-15", sanos: 2820, enfermos: 15, recuperados: 8, muertos: 2 },
+//   { fecha: "2024-02-16", sanos: 2815, enfermos: 18, recuperados: 12, muertos: 3 },
+//   { fecha: "2024-02-17", sanos: 2810, enfermos: 22, recuperados: 15, muertos: 3 },
+//   { fecha: "2024-02-18", sanos: 2805, enfermos: 25, recuperados: 18, muertos: 4 },
+//   { fecha: "2024-02-19", sanos: 2800, enfermos: 28, recuperados: 22, muertos: 5 },
+//   { fecha: "2024-02-20", sanos: 2760, enfermos: 62, recuperados: 25, muertos: 3 }
+// ]
 
-const sintomasComunes = [
-  "Respiración dificultosa",
-  "Secreción nasal",
-  "Letargo",
-  "Pérdida de apetito",
-  "Diarrea",
-  "Cojera",
-  "Plumas erizadas",
-  "Ojos cerrados",
-  "Temblores",
-  "Convulsiones"
-]
+// const sintomasComunes = [
+//   "Respiración dificultosa",
+//   "Secreción nasal",
+//   "Letargo",
+//   "Pérdida de apetito",
+//   "Diarrea",
+//   "Cojera",
+//   "Plumas erizadas",
+//   "Ojos cerrados",
+//   "Temblores",
+//   "Convulsiones"
+// ]
 
-const medicamentosComunes = [
-  "Enrofloxacina",
-  "Amoxicilina",
-  "Tetraciclina", 
-  "Sulfametoxazol",
-  "Vacuna Newcastle",
-  "Vacuna Gumboro",
-  "Vitamina complejo B",
-  "Electrolitos"
-]
+// const medicamentosComunes = [
+//   "Enrofloxacina",
+//   "Amoxicilina",
+//   "Tetraciclina",
+//   "Sulfametoxazol",
+//   "Vacuna Newcastle",
+//   "Vacuna Gumboro",
+//   "Vitamina complejo B",
+//   "Electrolitos"
+// ]
 
 export default function SaludPage() {
-  const [registros, setRegistros] = useState<RegistroSalud[]>(mockRegistros)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [selectedTab, setSelectedTab] = useState("registros")
-  const { toast } = useToast()
+  const [registros, setRegistros] = useState<RegistroSalud[]>(registrosData);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedTab, setSelectedTab] = useState("registros");
+  const { toast } = useToast();
 
   const [formData, setFormData] = useState({
     polloIdentificador: "",
@@ -137,8 +181,8 @@ export default function SaludPage() {
     dosis: "",
     veterinario: "",
     proximaRevision: "",
-    observaciones: ""
-  })
+    observaciones: "",
+  });
 
   const resetForm = () => {
     setFormData({
@@ -152,19 +196,19 @@ export default function SaludPage() {
       dosis: "",
       veterinario: "",
       proximaRevision: "",
-      observaciones: ""
-    })
-  }
+      observaciones: "",
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     const newRegistro: RegistroSalud = {
       id: Date.now().toString(),
       polloId: "auto", // En un sistema real, esto se obtendría del identificador
       polloIdentificador: formData.polloIdentificador,
       lote: formData.lote,
-      fecha: new Date().toISOString().split('T')[0],
+      fecha: new Date().toISOString().split("T")[0],
       tipoRegistro: formData.tipoRegistro as any,
       sintomas: formData.sintomas,
       diagnostico: formData.diagnostico,
@@ -173,57 +217,66 @@ export default function SaludPage() {
       dosis: formData.dosis,
       veterinario: formData.veterinario,
       proximaRevision: formData.proximaRevision || undefined,
-      observaciones: formData.observaciones
-    }
-    
-    setRegistros([newRegistro, ...registros])
-    setIsDialogOpen(false)
-    resetForm()
-    
+      observaciones: formData.observaciones,
+    };
+
+    setRegistros([newRegistro, ...registros]);
+    setIsDialogOpen(false);
+    resetForm();
+
     toast({
       title: "Registro de salud creado",
-      description: "El registro médico ha sido guardado exitosamente"
-    })
-  }
+      description: "El registro médico ha sido guardado exitosamente",
+    });
+  };
 
   const handleSintomaToggle = (sintoma: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       sintomas: prev.sintomas.includes(sintoma)
-        ? prev.sintomas.filter(s => s !== sintoma)
-        : [...prev.sintomas, sintoma]
-    }))
-  }
+        ? prev.sintomas.filter((s) => s !== sintoma)
+        : [...prev.sintomas, sintoma],
+    }));
+  };
 
   const getTipoRegistroBadge = (tipo: string) => {
     const config = {
       revision: { variant: "default" as const, icon: Stethoscope },
       enfermedad: { variant: "destructive" as const, icon: AlertTriangle },
       tratamiento: { variant: "secondary" as const, icon: Pill },
-      vacunacion: { variant: "outline" as const, icon: Activity }
-    }
-    return config[tipo as keyof typeof config] || config.revision
-  }
+      vacunacion: { variant: "outline" as const, icon: Activity },
+    };
+    return config[tipo as keyof typeof config] || config.revision;
+  };
 
   const estadisticasResumen = {
     totalRegistros: registros.length,
-    enfermedadesActivas: registros.filter(r => r.tipoRegistro === "enfermedad").length,
-    tratamientosEnCurso: registros.filter(r => r.proximaRevision && new Date(r.proximaRevision) > new Date()).length,
-    vacunacionesRecientes: registros.filter(r => r.tipoRegistro === "vacunacion" && 
-      new Date(r.fecha) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length
-  }
+    enfermedadesActivas: registros.filter(
+      (r) => r.tipoRegistro === RecordType.SICK
+    ).length,
+    tratamientosEnCurso: registros.filter(
+      (r) => r.proximaRevision && new Date(r.proximaRevision) > new Date()
+    ).length,
+    vacunacionesRecientes: registros.filter(
+      (r) =>
+        r.tipoRegistro === RecordType.VACCINATION &&
+        new Date(r.fecha) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    ).length,
+  };
 
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Monitoreo de Salud</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Monitoreo de Salud
+          </h1>
           <p className="text-muted-foreground">
             Registro médico y seguimiento sanitario de todos los pollos
           </p>
         </div>
-        
+
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={resetForm} className="gap-2">
@@ -238,25 +291,41 @@ export default function SaludPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="polloIdentificador">Identificador del Pollo</Label>
+                  <Label htmlFor="polloIdentificador">
+                    Identificador del Pollo
+                  </Label>
                   <Input
                     id="polloIdentificador"
                     value={formData.polloIdentificador}
-                    onChange={(e) => setFormData({...formData, polloIdentificador: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        polloIdentificador: e.target.value,
+                      })
+                    }
                     placeholder="A001, B002, etc."
                     required
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lote">Lote</Label>
-                  <Select value={formData.lote} onValueChange={(value) => setFormData({...formData, lote: value})}>
+                  <Select
+                    value={formData.lote}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, lote: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Seleccionar lote" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Lote A - Ene 2024">Lote A - Ene 2024</SelectItem>
-                      <SelectItem value="Lote B - Dic 2023">Lote B - Dic 2023</SelectItem>
-                      <SelectItem value="Lote C - Ene 2024">Lote C - Ene 2024</SelectItem>
+                      {lotesData.map((lote) => (
+                        <SelectItem value={lote.id}>
+                          {`${lote.nombre} - ${lote.fechaInicio}`}
+                        </SelectItem>
+                      ))}
+                      {/* <SelectItem value="Lote B - Dic 2023">Lote B - Dic 2023</SelectItem>
+                      <SelectItem value="Lote C - Ene 2024">Lote C - Ene 2024</SelectItem> */}
                     </SelectContent>
                   </Select>
                 </div>
@@ -265,12 +334,19 @@ export default function SaludPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="tipoRegistro">Tipo de Registro</Label>
-                  <Select value={formData.tipoRegistro} onValueChange={(value) => setFormData({...formData, tipoRegistro: value})}>
+                  <Select
+                    value={formData.tipoRegistro}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, tipoRegistro: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="revision">Revisión Rutinaria</SelectItem>
+                      <SelectItem value="revision">
+                        Revisión Rutinaria
+                      </SelectItem>
                       <SelectItem value="enfermedad">Enfermedad</SelectItem>
                       <SelectItem value="tratamiento">Tratamiento</SelectItem>
                       <SelectItem value="vacunacion">Vacunación</SelectItem>
@@ -282,7 +358,9 @@ export default function SaludPage() {
                   <Input
                     id="veterinario"
                     value={formData.veterinario}
-                    onChange={(e) => setFormData({...formData, veterinario: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, veterinario: e.target.value })
+                    }
                     placeholder="Nombre del veterinario"
                     required
                   />
@@ -293,8 +371,11 @@ export default function SaludPage() {
                 <div className="space-y-2">
                   <Label>Síntomas Observados</Label>
                   <div className="grid grid-cols-2 gap-2">
-                    {sintomasComunes.map(sintoma => (
-                      <div key={sintoma} className="flex items-center space-x-2">
+                    {sintomasComunes.map((sintoma) => (
+                      <div
+                        key={sintoma}
+                        className="flex items-center space-x-2"
+                      >
                         <input
                           type="checkbox"
                           id={sintoma}
@@ -302,7 +383,9 @@ export default function SaludPage() {
                           onChange={() => handleSintomaToggle(sintoma)}
                           className="w-4 h-4"
                         />
-                        <Label htmlFor={sintoma} className="text-sm">{sintoma}</Label>
+                        <Label htmlFor={sintoma} className="text-sm">
+                          {sintoma}
+                        </Label>
                       </div>
                     ))}
                   </div>
@@ -314,7 +397,9 @@ export default function SaludPage() {
                 <Input
                   id="diagnostico"
                   value={formData.diagnostico}
-                  onChange={(e) => setFormData({...formData, diagnostico: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, diagnostico: e.target.value })
+                  }
                   placeholder="Diagnóstico médico"
                   required
                 />
@@ -325,7 +410,9 @@ export default function SaludPage() {
                 <Input
                   id="tratamiento"
                   value={formData.tratamiento}
-                  onChange={(e) => setFormData({...formData, tratamiento: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, tratamiento: e.target.value })
+                  }
                   placeholder="Descripción del tratamiento"
                 />
               </div>
@@ -333,13 +420,20 @@ export default function SaludPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="medicamento">Medicamento</Label>
-                  <Select value={formData.medicamento} onValueChange={(value) => setFormData({...formData, medicamento: value})}>
+                  <Select
+                    value={formData.medicamento}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, medicamento: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Seleccionar medicamento" />
                     </SelectTrigger>
                     <SelectContent>
-                      {medicamentosComunes.map(med => (
-                        <SelectItem key={med} value={med}>{med}</SelectItem>
+                      {medicamentosComunes.map((med) => (
+                        <SelectItem key={med} value={med}>
+                          {med}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -349,7 +443,9 @@ export default function SaludPage() {
                   <Input
                     id="dosis"
                     value={formData.dosis}
-                    onChange={(e) => setFormData({...formData, dosis: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, dosis: e.target.value })
+                    }
                     placeholder="10mg/kg por 5 días"
                   />
                 </div>
@@ -361,7 +457,12 @@ export default function SaludPage() {
                   id="proximaRevision"
                   type="date"
                   value={formData.proximaRevision}
-                  onChange={(e) => setFormData({...formData, proximaRevision: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      proximaRevision: e.target.value,
+                    })
+                  }
                 />
               </div>
 
@@ -370,14 +471,20 @@ export default function SaludPage() {
                 <Textarea
                   id="observaciones"
                   value={formData.observaciones}
-                  onChange={(e) => setFormData({...formData, observaciones: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, observaciones: e.target.value })
+                  }
                   placeholder="Observaciones adicionales del veterinario..."
                   rows={3}
                 />
               </div>
-              
+
               <div className="flex gap-2 justify-end">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                >
                   Cancelar
                 </Button>
                 <Button type="submit">Guardar Registro</Button>
@@ -391,44 +498,60 @@ export default function SaludPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Registros</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Registros
+            </CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{estadisticasResumen.totalRegistros}</div>
+            <div className="text-2xl font-bold">
+              {estadisticasResumen.totalRegistros}
+            </div>
             <p className="text-xs text-muted-foreground">Registros médicos</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Enfermedades Activas</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Enfermedades Activas
+            </CardTitle>
             <AlertTriangle className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-destructive">{estadisticasResumen.enfermedadesActivas}</div>
+            <div className="text-2xl font-bold text-destructive">
+              {estadisticasResumen.enfermedadesActivas}
+            </div>
             <p className="text-xs text-muted-foreground">Requieren atención</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tratamientos en Curso</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Tratamientos en Curso
+            </CardTitle>
             <Pill className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-warning">{estadisticasResumen.tratamientosEnCurso}</div>
+            <div className="text-2xl font-bold text-warning">
+              {estadisticasResumen.tratamientosEnCurso}
+            </div>
             <p className="text-xs text-muted-foreground">Con seguimiento</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Vacunaciones Recientes</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Vacunaciones Recientes
+            </CardTitle>
             <Stethoscope className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">{estadisticasResumen.vacunacionesRecientes}</div>
+            <div className="text-2xl font-bold text-success">
+              {estadisticasResumen.vacunacionesRecientes}
+            </div>
             <p className="text-xs text-muted-foreground">Última semana</p>
           </CardContent>
         </Card>
@@ -463,16 +586,25 @@ export default function SaludPage() {
                   </TableHeader>
                   <TableBody>
                     {registros.map((registro) => {
-                      const tipoConfig = getTipoRegistroBadge(registro.tipoRegistro)
-                      const IconComponent = tipoConfig.icon
-                      
+                      const tipoConfig = getTipoRegistroBadge(
+                        registro.tipoRegistro
+                      );
+                      const IconComponent = tipoConfig.icon;
+
                       return (
                         <TableRow key={registro.id}>
-                          <TableCell>{new Date(registro.fecha).toLocaleDateString()}</TableCell>
-                          <TableCell className="font-medium">{registro.polloIdentificador}</TableCell>
+                          <TableCell>
+                            {new Date(registro.fecha).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {registro.polloIdentificador}
+                          </TableCell>
                           <TableCell>{registro.lote}</TableCell>
                           <TableCell>
-                            <Badge variant={tipoConfig.variant} className="gap-1">
+                            <Badge
+                              variant={tipoConfig.variant}
+                              className="gap-1"
+                            >
                               <IconComponent className="h-3 w-3" />
                               {registro.tipoRegistro}
                             </Badge>
@@ -480,13 +612,14 @@ export default function SaludPage() {
                           <TableCell>{registro.diagnostico}</TableCell>
                           <TableCell>{registro.veterinario}</TableCell>
                           <TableCell>
-                            {registro.proximaRevision ? 
-                              new Date(registro.proximaRevision).toLocaleDateString() : 
-                              "-"
-                            }
+                            {registro.proximaRevision
+                              ? new Date(
+                                  registro.proximaRevision
+                                ).toLocaleDateString()
+                              : "-"}
                           </TableCell>
                         </TableRow>
-                      )
+                      );
                     })}
                   </TableBody>
                 </Table>
@@ -504,25 +637,48 @@ export default function SaludPage() {
               <CardContent>
                 <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={mockEstadisticas}>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                      <XAxis 
-                        dataKey="fecha" 
+                    <LineChart data={estadisticasData}>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        className="stroke-muted"
+                      />
+                      <XAxis
+                        dataKey="fecha"
                         className="text-muted-foreground"
                         fontSize={12}
-                        tickFormatter={(value) => new Date(value).toLocaleDateString()}
+                        tickFormatter={(value) =>
+                          new Date(value).toLocaleDateString()
+                        }
                       />
                       <YAxis className="text-muted-foreground" fontSize={12} />
-                      <Tooltip 
+                      <Tooltip
                         contentStyle={{
                           backgroundColor: "hsl(var(--card))",
                           border: "1px solid hsl(var(--border))",
-                          borderRadius: "var(--radius)"
+                          borderRadius: "var(--radius)",
                         }}
                       />
-                      <Line type="monotone" dataKey="sanos" stroke="hsl(var(--success))" strokeWidth={2} name="Sanos" />
-                      <Line type="monotone" dataKey="enfermos" stroke="hsl(var(--destructive))" strokeWidth={2} name="Enfermos" />
-                      <Line type="monotone" dataKey="recuperados" stroke="hsl(var(--primary))" strokeWidth={2} name="Recuperados" />
+                      <Line
+                        type="monotone"
+                        dataKey="sanos"
+                        stroke="hsl(var(--success))"
+                        strokeWidth={2}
+                        name="Sanos"
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="enfermos"
+                        stroke="hsl(var(--destructive))"
+                        strokeWidth={2}
+                        name="Enfermos"
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="recuperados"
+                        stroke="hsl(var(--primary))"
+                        strokeWidth={2}
+                        name="Recuperados"
+                      />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -536,20 +692,49 @@ export default function SaludPage() {
               <CardContent>
                 <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={[
-                      { tipo: "Revisiones", cantidad: registros.filter(r => r.tipoRegistro === "revision").length },
-                      { tipo: "Enfermedades", cantidad: registros.filter(r => r.tipoRegistro === "enfermedad").length },
-                      { tipo: "Tratamientos", cantidad: registros.filter(r => r.tipoRegistro === "tratamiento").length },
-                      { tipo: "Vacunaciones", cantidad: registros.filter(r => r.tipoRegistro === "vacunacion").length }
-                    ]}>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                      <XAxis dataKey="tipo" className="text-muted-foreground" fontSize={12} />
+                    <BarChart
+                      data={[
+                        {
+                          tipo: "Revisiones",
+                          cantidad: registros.filter(
+                            (r) => r.tipoRegistro === RecordType.REVISION
+                          ).length,
+                        },
+                        {
+                          tipo: "Enfermedades",
+                          cantidad: registros.filter(
+                            (r) => r.tipoRegistro === RecordType.SICK
+                          ).length,
+                        },
+                        {
+                          tipo: "Tratamientos",
+                          cantidad: registros.filter(
+                            (r) => r.tipoRegistro === RecordType.TREATMENT
+                          ).length,
+                        },
+                        {
+                          tipo: "Vacunaciones",
+                          cantidad: registros.filter(
+                            (r) => r.tipoRegistro === RecordType.VACCINATION
+                          ).length,
+                        },
+                      ]}
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        className="stroke-muted"
+                      />
+                      <XAxis
+                        dataKey="tipo"
+                        className="text-muted-foreground"
+                        fontSize={12}
+                      />
                       <YAxis className="text-muted-foreground" fontSize={12} />
-                      <Tooltip 
+                      <Tooltip
                         contentStyle={{
                           backgroundColor: "hsl(var(--card))",
                           border: "1px solid hsl(var(--border))",
-                          borderRadius: "var(--radius)"
+                          borderRadius: "var(--radius)",
                         }}
                       />
                       <Bar dataKey="cantidad" fill="hsl(var(--primary))" />
@@ -572,12 +757,16 @@ export default function SaludPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm">
-                  <strong>Incremento en enfermedades respiratorias</strong> - Se ha detectado un aumento del 40% 
-                  en casos de enfermedades respiratorias en el Lote A en los últimos 3 días. 
-                  Se recomienda revisión veterinaria inmediata y posible aislamiento preventivo.
+                  <strong>Incremento en enfermedades respiratorias</strong> - Se
+                  ha detectado un aumento del 40% en casos de enfermedades
+                  respiratorias en el Lote A en los últimos 3 días. Se
+                  recomienda revisión veterinaria inmediata y posible
+                  aislamiento preventivo.
                 </p>
                 <div className="mt-4">
-                  <Button variant="destructive" size="sm">Atender Alerta</Button>
+                  <Button variant="destructive" size="sm">
+                    Atender Alerta
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -591,11 +780,14 @@ export default function SaludPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm">
-                  <strong>Vacunación programada</strong> - El Lote C requiere vacunación de refuerzo contra Newcastle 
-                  en los próximos 2 días según el calendario sanitario establecido.
+                  <strong>Vacunación programada</strong> - El Lote C requiere
+                  vacunación de refuerzo contra Newcastle en los próximos 2 días
+                  según el calendario sanitario establecido.
                 </p>
                 <div className="mt-4">
-                  <Button variant="outline" size="sm">Programar Vacunación</Button>
+                  <Button variant="outline" size="sm">
+                    Programar Vacunación
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -609,8 +801,10 @@ export default function SaludPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm">
-                  <strong>Recuperación exitosa</strong> - El 85% de los pollos tratados por problemas respiratorios 
-                  en la semana pasada han mostrado recuperación completa. Continuar con protocolo establecido.
+                  <strong>Recuperación exitosa</strong> - El 85% de los pollos
+                  tratados por problemas respiratorios en la semana pasada han
+                  mostrado recuperación completa. Continuar con protocolo
+                  establecido.
                 </p>
               </CardContent>
             </Card>
@@ -618,5 +812,5 @@ export default function SaludPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
