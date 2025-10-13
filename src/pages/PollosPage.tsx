@@ -9,82 +9,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Plus, Edit, Trash2, Search, Filter, Heart, AlertTriangle, Skull } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { pollosData } from "@/data/pollos.data"
+import { Pollo } from "@/models/pollo.model"
+import { Health } from "@/models/health.model"
+import { lotesData } from "@/data/lotes.data"
 
-interface Pollo {
-  id: string
-  identificador: string
-  lote: string
-  raza: string
-  fechaNacimiento: string
-  pesoActual: number
-  estado: "sano" | "enfermo" | "muerto"
-  observaciones: string
-  ultimaRevision: string
-}
-
-const mockPollos: Pollo[] = [
-  {
-    id: "1",
-    identificador: "A001",
-    lote: "Lote A - Ene 2024",
-    raza: "Ross 308",
-    fechaNacimiento: "2024-01-15",
-    pesoActual: 1.25,
-    estado: "sano",
-    observaciones: "Desarrollo normal",
-    ultimaRevision: "2024-02-20"
-  },
-  {
-    id: "2",
-    identificador: "A002", 
-    lote: "Lote A - Ene 2024",
-    raza: "Ross 308",
-    fechaNacimiento: "2024-01-15",
-    pesoActual: 1.18,
-    estado: "enfermo",
-    observaciones: "Síntomas respiratorios leves",
-    ultimaRevision: "2024-02-20"
-  },
-  {
-    id: "3",
-    identificador: "B001",
-    lote: "Lote B - Dic 2023", 
-    raza: "Cobb 500",
-    fechaNacimiento: "2023-12-01",
-    pesoActual: 2.65,
-    estado: "sano",
-    observaciones: "Listo para procesamiento",
-    ultimaRevision: "2024-02-19"
-  },
-  {
-    id: "4",
-    identificador: "A003",
-    lote: "Lote A - Ene 2024",
-    raza: "Ross 308", 
-    fechaNacimiento: "2024-01-15",
-    pesoActual: 0,
-    estado: "muerto",
-    observaciones: "Mortalidad natural - semana 4",
-    ultimaRevision: "2024-02-15"
-  },
-  {
-    id: "5",
-    identificador: "C001",
-    lote: "Lote C - Ene 2024",
-    raza: "Ross 308",
-    fechaNacimiento: "2024-01-20", 
-    pesoActual: 2.15,
-    estado: "sano",
-    observaciones: "Crecimiento óptimo",
-    ultimaRevision: "2024-02-20"
-  }
-]
-
-const lotes = ["Todos", "Lote A - Ene 2024", "Lote B - Dic 2023", "Lote C - Ene 2024"]
 
 export default function PollosPage() {
-  const [pollos, setPollos] = useState<Pollo[]>(mockPollos)
-  const [filteredPollos, setFilteredPollos] = useState<Pollo[]>(mockPollos)
+  const [pollos, setPollos] = useState<Pollo[]>(pollosData)
+  const [filteredPollos, setFilteredPollos] = useState<Pollo[]>(pollosData)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingPollo, setEditingPollo] = useState<Pollo | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
@@ -154,7 +87,7 @@ export default function PollosPage() {
               raza: formData.raza,
               fechaNacimiento: formData.fechaNacimiento,
               pesoActual: parseFloat(formData.pesoActual),
-              estado: formData.estado as "sano" | "enfermo" | "muerto",
+              estado: formData.estado as Health,
               observaciones: formData.observaciones,
               ultimaRevision: new Date().toISOString().split('T')[0]
             }
@@ -172,7 +105,7 @@ export default function PollosPage() {
         raza: formData.raza,
         fechaNacimiento: formData.fechaNacimiento,
         pesoActual: parseFloat(formData.pesoActual),
-        estado: formData.estado as "sano" | "enfermo" | "muerto",
+        estado: formData.estado as Health,
         observaciones: formData.observaciones,
         ultimaRevision: new Date().toISOString().split('T')[0]
       }
@@ -210,7 +143,7 @@ export default function PollosPage() {
     })
   }
 
-  const handleQuickStatusChange = (id: string, newStatus: "enfermo" | "muerto") => {
+  const handleQuickStatusChange = (id: string, newStatus: Health) => {
     setPollos(pollos.map(pollo => 
       pollo.id === id 
         ? { 
@@ -294,8 +227,8 @@ export default function PollosPage() {
                       <SelectValue placeholder="Seleccionar lote" />
                     </SelectTrigger>
                     <SelectContent>
-                      {lotes.slice(1).map(lote => (
-                        <SelectItem key={lote} value={lote}>{lote}</SelectItem>
+                      {lotesData.slice(1).map(lote => (
+                        <SelectItem key={lote.id} value={lote.id}>{lote.nombre}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -455,8 +388,8 @@ export default function PollosPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {lotes.map(lote => (
-                    <SelectItem key={lote} value={lote}>{lote}</SelectItem>
+                  {lotesData.map(lote => (
+                    <SelectItem key={lote.id} value={lote.id}>{lote.nombre}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -534,7 +467,7 @@ export default function PollosPage() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleQuickStatusChange(pollo.id, "enfermo")}
+                                onClick={() => handleQuickStatusChange(pollo.id, Health.SICK)}
                                 className="h-7 px-2 text-warning hover:text-warning"
                                 title="Marcar como enfermo"
                               >
@@ -543,7 +476,7 @@ export default function PollosPage() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleQuickStatusChange(pollo.id, "muerto")}
+                                onClick={() => handleQuickStatusChange(pollo.id, Health.DEAD)}
                                 className="h-7 px-2 text-destructive hover:text-destructive"
                                 title="Marcar como muerto"
                               >
