@@ -1,7 +1,7 @@
 import { Lote } from "@/models/lote.model";
 import { Status } from "@/models/status.model";
 
-const lotesData: Lote[] = [
+export const lotesData: Lote[] = [
   {
     id: "1",
     nombre: "Lote A - Ene 2024",
