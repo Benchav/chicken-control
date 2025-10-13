@@ -344,12 +344,12 @@ export default function SaludPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="revision">
+                      <SelectItem value={RecordType.REVISION}>
                         Revisión Rutinaria
                       </SelectItem>
-                      <SelectItem value="enfermedad">Enfermedad</SelectItem>
-                      <SelectItem value="tratamiento">Tratamiento</SelectItem>
-                      <SelectItem value="vacunacion">Vacunación</SelectItem>
+                      <SelectItem value={RecordType.SICK}>Enfermedad</SelectItem>
+                      <SelectItem value={RecordType.TREATMENT}>Tratamiento</SelectItem>
+                      <SelectItem value={RecordType.VACCINATION}>Vacunación</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -367,7 +367,7 @@ export default function SaludPage() {
                 </div>
               </div>
 
-              {formData.tipoRegistro === "enfermedad" && (
+              {formData.tipoRegistro === RecordType.SICK && (
                 <div className="space-y-2">
                   <Label>Síntomas Observados</Label>
                   <div className="grid grid-cols-2 gap-2">
