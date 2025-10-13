@@ -57,113 +57,6 @@ import { medicamentosComunes } from "@/data/commonMedications.data";
 import { estadisticasData } from "@/data/healthStatistics.data";
 import { lotesData } from "@/data/lotes.data";
 
-// interface RegistroSalud {
-//   id: string
-//   polloId: string
-//   polloIdentificador: string
-//   lote: string
-//   fecha: string
-//   tipoRegistro: "revision" | "enfermedad" | "tratamiento" | "vacunacion"
-//   sintomas: string[]
-//   diagnostico: string
-//   tratamiento: string
-//   medicamento: string
-//   dosis: string
-//   veterinario: string
-//   proximaRevision?: string
-//   observaciones: string
-// }
-
-// interface EstadisticaSalud {
-//   fecha: string
-//   sanos: number
-//   enfermos: number
-//   recuperados: number
-//   muertos: number
-// }
-
-// const mockRegistros: RegistroSalud[] = [
-//   {
-//     id: "1",
-//     polloId: "2",
-//     polloIdentificador: "A002",
-//     lote: "Lote A - Ene 2024",
-//     fecha: "2024-02-20",
-//     tipoRegistro: "enfermedad",
-//     sintomas: ["Respiración dificultosa", "Secreción nasal", "Letargo"],
-//     diagnostico: "Infección respiratoria leve",
-//     tratamiento: "Antibiótico oral + aislamiento",
-//     medicamento: "Enrofloxacina",
-//     dosis: "10mg/kg durante 5 días",
-//     veterinario: "Dr. María González",
-//     proximaRevision: "2024-02-25",
-//     observaciones: "Mejoría notable después de 2 días de tratamiento"
-//   },
-//   {
-//     id: "2",
-//     polloId: "1",
-//     polloIdentificador: "A001",
-//     lote: "Lote A - Ene 2024",
-//     fecha: "2024-02-18",
-//     tipoRegistro: "revision",
-//     sintomas: [],
-//     diagnostico: "Estado de salud normal",
-//     tratamiento: "Ninguno",
-//     medicamento: "",
-//     dosis: "",
-//     veterinario: "Dr. Carlos Ruiz",
-//     observaciones: "Desarrollo dentro de parámetros normales"
-//   },
-//   {
-//     id: "3",
-//     polloId: "3",
-//     polloIdentificador: "B001",
-//     lote: "Lote B - Dic 2023",
-//     fecha: "2024-02-19",
-//     tipoRegistro: "vacunacion",
-//     sintomas: [],
-//     diagnostico: "Vacunación preventiva",
-//     tratamiento: "Vacuna Newcastle",
-//     medicamento: "Vacuna Newcastle La Sota",
-//     dosis: "0.5ml vía ocular",
-//     veterinario: "Dr. María González",
-//     observaciones: "Vacunación de refuerzo completada sin complicaciones"
-//   }
-// ]
-
-// const mockEstadisticas: EstadisticaSalud[] = [
-//   { fecha: "2024-02-15", sanos: 2820, enfermos: 15, recuperados: 8, muertos: 2 },
-//   { fecha: "2024-02-16", sanos: 2815, enfermos: 18, recuperados: 12, muertos: 3 },
-//   { fecha: "2024-02-17", sanos: 2810, enfermos: 22, recuperados: 15, muertos: 3 },
-//   { fecha: "2024-02-18", sanos: 2805, enfermos: 25, recuperados: 18, muertos: 4 },
-//   { fecha: "2024-02-19", sanos: 2800, enfermos: 28, recuperados: 22, muertos: 5 },
-//   { fecha: "2024-02-20", sanos: 2760, enfermos: 62, recuperados: 25, muertos: 3 }
-// ]
-
-// const sintomasComunes = [
-//   "Respiración dificultosa",
-//   "Secreción nasal",
-//   "Letargo",
-//   "Pérdida de apetito",
-//   "Diarrea",
-//   "Cojera",
-//   "Plumas erizadas",
-//   "Ojos cerrados",
-//   "Temblores",
-//   "Convulsiones"
-// ]
-
-// const medicamentosComunes = [
-//   "Enrofloxacina",
-//   "Amoxicilina",
-//   "Tetraciclina",
-//   "Sulfametoxazol",
-//   "Vacuna Newcastle",
-//   "Vacuna Gumboro",
-//   "Vitamina complejo B",
-//   "Electrolitos"
-// ]
-
 export default function SaludPage() {
   const [registros, setRegistros] = useState<RegistroSalud[]>(registrosData);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -173,7 +66,7 @@ export default function SaludPage() {
   const [formData, setFormData] = useState({
     polloIdentificador: "",
     lote: "",
-    tipoRegistro: "revision",
+    tipoRegistro: RecordType.REVISION,
     sintomas: [] as string[],
     diagnostico: "",
     tratamiento: "",
@@ -188,7 +81,7 @@ export default function SaludPage() {
     setFormData({
       polloIdentificador: "",
       lote: "",
-      tipoRegistro: "revision",
+      tipoRegistro: RecordType.REVISION,
       sintomas: [],
       diagnostico: "",
       tratamiento: "",
@@ -337,7 +230,7 @@ export default function SaludPage() {
                   <Select
                     value={formData.tipoRegistro}
                     onValueChange={(value) =>
-                      setFormData({ ...formData, tipoRegistro: value })
+                      setFormData({ ...formData, tipoRegistro: value as RecordType })
                     }
                   >
                     <SelectTrigger>
