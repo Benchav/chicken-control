@@ -3,5 +3,6 @@ export enum AlertType{
   PRODUCTION = 'produccion',
   ATMOSPHERE = 'ambiente',
   ALIMENTATION= 'alimentacion',
-  MAINTENANCE = 'mantenimiento'
+  MAINTENANCE = 'mantenimiento',
+  MORTALITY ='mortalidad'
 }

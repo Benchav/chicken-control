@@ -41,175 +41,15 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { Alerta } from "@/models/alert.model";
+import { alertasData } from "@/data/alert.data";
+import { AlertStatus } from "@/models/alertStatus.model";
+import { prediccionesData } from "@/data/prediction.data";
+import { tendenciaAlertas } from "@/data/trendAlerts.data";
 
-interface Alerta {
-  id: string;
-  tipo:
-    | "salud"
-    | "produccion"
-    | "mortalidad"
-    | "ambiente"
-    | "alimentacion"
-    | "mantenimiento";
-  prioridad: "baja" | "media" | "alta" | "critica";
-  titulo: string;
-  descripcion: string;
-  lote?: string;
-  fechaCreacion: string;
-  fechaVencimiento?: string;
-  estado: "activa" | "resuelta" | "descartada";
-  accionesRecomendadas: string[];
-  parametros?: {
-    valorActual?: number;
-    valorEsperado?: number;
-    unidad?: string;
-  };
-}
-
-interface Prediccion {
-  id: string;
-  tipo: "peso" | "mortalidad" | "conversion" | "sacrificio";
-  lote: string;
-  fechaPrediccion: string;
-  valor: number;
-  confianza: number;
-  descripcion: string;
-}
-
-const mockAlertas: Alerta[] = [
-  {
-    id: "1",
-    tipo: "salud",
-    prioridad: "critica",
-    titulo: "Brote respiratorio detectado - Lote A",
-    descripcion:
-      "Incremento significativo de síntomas respiratorios en el 15% del lote. Posible infección viral.",
-    lote: "Lote A - Ene 2024",
-    fechaCreacion: "2024-02-20T08:30:00",
-    fechaVencimiento: "2024-02-22T18:00:00",
-    estado: "activa",
-    accionesRecomendadas: [
-      "Aislamiento inmediato de pollos afectados",
-      "Consulta veterinaria urgente",
-      "Mejora ventilación en galpón",
-      "Monitoreo intensivo cada 4 horas",
-    ],
-    parametros: {
-      valorActual: 15,
-      valorEsperado: 3,
-      unidad: "% pollos afectados",
-    },
-  },
-  {
-    id: "2",
-    tipo: "produccion",
-    prioridad: "media",
-    titulo: "Lote B listo para procesamiento",
-    descripcion:
-      "El Lote B ha alcanzado el peso objetivo de 2.5kg promedio. Programar sacrificio en 3-5 días.",
-    lote: "Lote B - Dic 2023",
-    fechaCreacion: "2024-02-19T14:15:00",
-    fechaVencimiento: "2024-02-25T00:00:00",
-    estado: "activa",
-    accionesRecomendadas: [
-      "Programar transporte a planta",
-      "Preparar documentación sanitaria",
-      "Realizar pesaje final",
-      "Coordinar con procesadora",
-    ],
-    parametros: {
-      valorActual: 2.5,
-      valorEsperado: 2.5,
-      unidad: "kg promedio",
-    },
-  },
-  {
-    id: "3",
-    tipo: "mortalidad",
-    prioridad: "alta",
-    titulo: "Mortalidad elevada - Lote C",
-    descripcion:
-      "La mortalidad ha superado el umbral del 5% en las últimas 48 horas.",
-    lote: "Lote C - Ene 2024",
-    fechaCreacion: "2024-02-19T16:45:00",
-    estado: "activa",
-    accionesRecomendadas: [
-      "Revisión veterinaria inmediata",
-      "Análisis de calidad del agua",
-      "Verificación de temperatura ambiental",
-      "Revisión del alimento",
-    ],
-    parametros: {
-      valorActual: 7.2,
-      valorEsperado: 5.0,
-      unidad: "% mortalidad",
-    },
-  },
-  {
-    id: "4",
-    tipo: "ambiente",
-    prioridad: "media",
-    titulo: "Temperatura fuera de rango - Galpón 2",
-    descripcion:
-      "La temperatura ha estado por encima de 28°C durante las últimas 6 horas.",
-    fechaCreacion: "2024-02-20T11:00:00",
-    estado: "activa",
-    accionesRecomendadas: [
-      "Verificar sistema de ventilación",
-      "Ajustar extractores",
-      "Revisar sensores de temperatura",
-      "Activar nebulización si disponible",
-    ],
-    parametros: {
-      valorActual: 29.5,
-      valorEsperado: 25.0,
-      unidad: "°C",
-    },
-  },
-];
-
-const mockPredicciones: Prediccion[] = [
-  {
-    id: "1",
-    tipo: "sacrificio",
-    lote: "Lote B - Dic 2023",
-    fechaPrediccion: "2024-02-25",
-    valor: 2.65,
-    confianza: 92,
-    descripcion: "Peso óptimo para sacrificio alcanzado en 5 días",
-  },
-  {
-    id: "2",
-    tipo: "peso",
-    lote: "Lote A - Ene 2024",
-    fechaPrediccion: "2024-03-15",
-    valor: 2.4,
-    confianza: 87,
-    descripcion: "Peso esperado de 2.4kg en 3 semanas",
-  },
-  {
-    id: "3",
-    tipo: "conversion",
-    lote: "Lote C - Ene 2024",
-    fechaPrediccion: "2024-03-01",
-    valor: 1.85,
-    confianza: 78,
-    descripcion: "Conversión alimenticia proyectada: 1.85:1",
-  },
-];
-
-const tendenciaAlertas = [
-  { fecha: "2024-02-14", salud: 2, produccion: 1, mortalidad: 0, ambiente: 1 },
-  { fecha: "2024-02-15", salud: 1, produccion: 2, mortalidad: 1, ambiente: 2 },
-  { fecha: "2024-02-16", salud: 3, produccion: 1, mortalidad: 0, ambiente: 1 },
-  { fecha: "2024-02-17", salud: 2, produccion: 3, mortalidad: 1, ambiente: 3 },
-  { fecha: "2024-02-18", salud: 4, produccion: 2, mortalidad: 2, ambiente: 2 },
-  { fecha: "2024-02-19", salud: 3, produccion: 1, mortalidad: 3, ambiente: 1 },
-  { fecha: "2024-02-20", salud: 5, produccion: 2, mortalidad: 1, ambiente: 2 },
-];
 
 export default function AlertasPage() {
-  const [alertas, setAlertas] = useState<Alerta[]>(mockAlertas);
+  const [alertas, setAlertas] = useState<Alerta[]>(alertasData);
   const [filtroTipo, setFiltroTipo] = useState("todos");
   const [filtroPrioridad, setFiltroPrioridad] = useState("todos");
   const [filtroEstado, setFiltroEstado] = useState("activa");
@@ -228,7 +68,7 @@ export default function AlertasPage() {
   const handleResolverAlerta = (id: string) => {
     setAlertas(
       alertas.map((alerta) =>
-        alerta.id === id ? { ...alerta, estado: "resuelta" as const } : alerta
+        alerta.id === id ? { ...alerta, estado: AlertStatus.RESOLVED } : alerta
       )
     );
     toast({
@@ -240,7 +80,7 @@ export default function AlertasPage() {
   const handleDescartarAlerta = (id: string) => {
     setAlertas(
       alertas.map((alerta) =>
-        alerta.id === id ? { ...alerta, estado: "descartada" as const } : alerta
+        alerta.id === id ? { ...alerta, estado: AlertStatus.DISCARDED } : alerta
       )
     );
     toast({
@@ -545,7 +385,7 @@ export default function AlertasPage() {
 
         <TabsContent value="predicciones" className="space-y-4">
           <div className="grid gap-4 lg:grid-cols-2">
-            {mockPredicciones.map((prediccion) => (
+            {prediccionesData.map((prediccion) => (
               <Card key={prediccion.id}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
