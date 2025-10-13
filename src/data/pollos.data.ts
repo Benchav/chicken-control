@@ -1,7 +1,7 @@
 import { Health } from "@/models/health.model";
 import { Pollo } from "@/models/pollo.model";
 
-const pollosData: Pollo[] = [
+export const pollosData: Pollo[] = [
   {
     id: "1",
     identificador: "A001",
