@@ -9,73 +9,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, Edit, Trash2, Users, TrendingUp, AlertTriangle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-
-interface Lote {
-  id: string
-  nombre: string
-  cantidadInicial: number
-  cantidadActual: number
-  fechaInicio: string
-  raza: string
-  estado: "activo" | "completado" | "suspendido"
-  pesoPromedio: number
-  mortalidad: number
-  observaciones: string
-}
-
-const mockLotes: Lote[] = [
-  {
-    id: "1",
-    nombre: "Lote A - Ene 2024",
-    cantidadInicial: 1100,
-    cantidadActual: 1050,
-    fechaInicio: "2024-01-15",
-    raza: "Ross 308",
-    estado: "activo",
-    pesoPromedio: 1.2,
-    mortalidad: 4.5,
-    observaciones: "Desarrollo normal, buena conversión alimenticia"
-  },
-  {
-    id: "2", 
-    nombre: "Lote B - Dic 2023",
-    cantidadInicial: 950,
-    cantidadActual: 890,
-    fechaInicio: "2023-12-01",
-    raza: "Cobb 500",
-    estado: "activo",
-    pesoPromedio: 2.5,
-    mortalidad: 6.3,
-    observaciones: "Listo para procesamiento la próxima semana"
-  },
-  {
-    id: "3",
-    nombre: "Lote C - Ene 2024",
-    cantidadInicial: 980,
-    cantidadActual: 907,
-    fechaInicio: "2024-01-20",
-    raza: "Ross 308",
-    estado: "activo", 
-    pesoPromedio: 2.1,
-    mortalidad: 7.4,
-    observaciones: "Crecimiento dentro de parámetros esperados"
-  },
-  {
-    id: "4",
-    nombre: "Lote D - Nov 2023",
-    cantidadInicial: 1200,
-    cantidadActual: 0,
-    fechaInicio: "2023-11-01",
-    raza: "Cobb 500",
-    estado: "completado",
-    pesoPromedio: 2.8,
-    mortalidad: 5.2,
-    observaciones: "Completado exitosamente. Buen rendimiento"
-  }
-]
+import { lotesData } from "@/data/lotes.data"
+import { Lote } from "@/models/lote.model"
+import { Status } from "@/models/status.model"
 
 export default function LotesPage() {
-  const [lotes, setLotes] = useState<Lote[]>(mockLotes)
+  const [lotes, setLotes] = useState<Lote[]>(lotesData)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingLote, setEditingLote] = useState<Lote | null>(null)
   const { toast } = useToast()
@@ -127,7 +66,7 @@ export default function LotesPage() {
         cantidadActual: parseInt(formData.cantidadInicial),
         fechaInicio: formData.fechaInicio,
         raza: formData.raza,
-        estado: "activo",
+        estado: Status.ACTIVE,
         pesoPromedio: 0,
         mortalidad: 0,
         observaciones: formData.observaciones
