@@ -1,3 +1,5 @@
+import { Status } from "./status.model"
+
 export interface Lote {
   id: string
   nombre: string
@@ -5,7 +7,7 @@ export interface Lote {
   cantidadActual: number
   fechaInicio: string
   raza: string
-  estado: "activo" | "completado" | "suspendido"
+  estado: Status
   pesoPromedio: number
   mortalidad: number
   observaciones: string
