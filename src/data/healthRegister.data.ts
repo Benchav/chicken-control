@@ -1,7 +1,7 @@
 import { RegistroSalud } from "@/models/healthRegister.model";
 import { RecordType } from "@/models/recordType.model";
 
-const registrosData: RegistroSalud[] = [
+export const registrosData: RegistroSalud[] = [
   {
     id: "1",
     polloId: "2",
