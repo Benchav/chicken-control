@@ -3,7 +3,7 @@ import { AlertPriority } from "@/models/alertPriority.model";
 import { AlertStatus } from "@/models/alertStatus.model";
 import { AlertType } from "@/models/alertType.model";
 
-export const alertasData: Alerta[] = [
+export let alertasData: Alerta[] = [
   {
     id: "1",
     tipo: AlertType.HEALTH,
@@ -94,3 +94,7 @@ export const alertasData: Alerta[] = [
     },
   },
 ];
+
+export function setAlertsData(newData: Alerta[]) {
+  alertasData = newData;
+}
