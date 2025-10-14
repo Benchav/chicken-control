@@ -15,6 +15,7 @@ import NotFound from "./pages/NotFound";
 import { PolloProvider } from "./contexts/ChickenContext";
 import { LoteProvider } from "./contexts/LoteContext";
 import { HealthProvider } from "./contexts/HealthContext";
+import { AlertProvider } from "./contexts/AlertContext";
 
 const queryClient = new QueryClient();
 
@@ -38,21 +39,23 @@ const App = () => (
                 </div>
               </header>
               <main className="flex-1 overflow-auto">
-                <HealthProvider>
-                  <LoteProvider>
-                    <PolloProvider>
-                      <Routes>
-                        <Route path="/" element={<Dashboard />} />
-                        <Route path="/lotes" element={<LotesPage />} />
-                        <Route path="/pollos" element={<PollosPage />} />
-                        <Route path="/salud" element={<SaludPage />} />
-                        <Route path="/alertas" element={<AlertasPage />} />
-                        <Route path="/reportes" element={<ReportesPage />} />
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    </PolloProvider>
-                  </LoteProvider>
-                </HealthProvider>
+                <AlertProvider>
+                  <HealthProvider>
+                    <LoteProvider>
+                      <PolloProvider>
+                        <Routes>
+                          <Route path="/" element={<Dashboard />} />
+                          <Route path="/lotes" element={<LotesPage />} />
+                          <Route path="/pollos" element={<PollosPage />} />
+                          <Route path="/salud" element={<SaludPage />} />
+                          <Route path="/alertas" element={<AlertasPage />} />
+                          <Route path="/reportes" element={<ReportesPage />} />
+                          <Route path="*" element={<NotFound />} />
+                        </Routes>
+                      </PolloProvider>
+                    </LoteProvider>
+                  </HealthProvider>
+                </AlertProvider>
               </main>
             </div>
           </div>
