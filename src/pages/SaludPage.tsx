@@ -56,11 +56,12 @@ import { sintomasComunes } from "@/data/commonSymptoms.data";
 import { medicamentosComunes } from "@/data/commonMedications.data";
 import { estadisticasData } from "@/data/healthStatistics.data";
 import { lotesData } from "@/data/lotes.data";
+import { useHealthContext } from "@/contexts/HealthContext";
 
 export default function SaludPage() {
-  const [registros, setRegistros] = useState<RegistroSalud[]>(registrosData);
+  const { healths : registros, addHealth: addRegistro,updateHealth: updateRegistro,deleteHealth: deleteRegistro } = useHealthContext();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedTab, setSelectedTab] = useState("registros");
+   const [selectedTab, setSelectedTab] = useState("registros");
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -93,35 +94,23 @@ export default function SaludPage() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const newRegistro: RegistroSalud = {
-      id: Date.now().toString(),
-      polloId: "auto", // En un sistema real, esto se obtendría del identificador
-      polloIdentificador: formData.polloIdentificador,
-      lote: formData.lote,
-      fecha: new Date().toISOString().split("T")[0],
-      tipoRegistro: formData.tipoRegistro as any,
-      sintomas: formData.sintomas,
-      diagnostico: formData.diagnostico,
-      tratamiento: formData.tratamiento,
-      medicamento: formData.medicamento,
-      dosis: formData.dosis,
-      veterinario: formData.veterinario,
-      proximaRevision: formData.proximaRevision || undefined,
-      observaciones: formData.observaciones,
-    };
-
-    setRegistros([newRegistro, ...registros]);
-    setIsDialogOpen(false);
-    resetForm();
+    await addRegistro({
+      polloId: "auto", //este es solo adorno
+      ...formData,
+      fecha: new Date().toISOString(),
+    });
 
     toast({
       title: "Registro de salud creado",
       description: "El registro médico ha sido guardado exitosamente",
     });
+
+    setIsDialogOpen(false);
+    resetForm();
   };
+
 
   const handleSintomaToggle = (sintoma: string) => {
     setFormData((prev) => ({
