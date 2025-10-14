@@ -46,17 +46,41 @@ import { alertasData } from "@/data/alert.data";
 import { AlertStatus } from "@/models/alertStatus.model";
 import { prediccionesData } from "@/data/prediction.data";
 import { tendenciaAlertas } from "@/data/trendAlerts.data";
-
+import { useAlertContext } from "@/contexts/AlertContext";
+import { AlertType } from "@/models/alertType.model";
+import { AlertPriority } from "@/models/alertPriority.model";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useLoteContext } from "@/contexts/LoteContext";
+import { Label } from "@/components/ui/label";
 
 export default function AlertasPage() {
-  const [alertas, setAlertas] = useState<Alerta[]>(alertasData);
+  const { alerts, updateAlert, addAlert } = useAlertContext();
+  const { lotes } = useLoteContext();
   const [filtroTipo, setFiltroTipo] = useState("todos");
   const [filtroPrioridad, setFiltroPrioridad] = useState("todos");
   const [filtroEstado, setFiltroEstado] = useState("activa");
   const [selectedTab, setSelectedTab] = useState("alertas");
+  const [nuevaAlerta, setNuevaAlerta] = useState({
+    titulo: "",
+    descripcion: "",
+    tipo: "",
+    prioridad: "",
+    lote: "",
+    valorActual: "",
+    valorEsperado: "",
+    unidad: "",
+    fechaVencimiento: "",
+  });
   const { toast } = useToast();
 
-  const alertasFiltradas = alertas.filter((alerta) => {
+  // 🔹 Filtrado de alertas usando los estados del filtro
+  const alertasFiltradas = alerts.filter((alerta) => {
     if (filtroTipo !== "todos" && alerta.tipo !== filtroTipo) return false;
     if (filtroPrioridad !== "todos" && alerta.prioridad !== filtroPrioridad)
       return false;
@@ -65,30 +89,33 @@ export default function AlertasPage() {
     return true;
   });
 
-  const handleResolverAlerta = (id: string) => {
-    setAlertas(
-      alertas.map((alerta) =>
-        alerta.id === id ? { ...alerta, estado: AlertStatus.RESOLVED } : alerta
-      )
-    );
+  // 🔹 Resolver alerta (actualiza en el contexto)
+  const handleResolverAlerta = async (id: string) => {
+    const alerta = alerts.find((a) => a.id === id);
+    if (!alerta) return;
+
+    await updateAlert({ ...alerta, estado: AlertStatus.RESOLVED });
+
     toast({
       title: "Alerta resuelta",
       description: "La alerta ha sido marcada como resuelta",
     });
   };
 
-  const handleDescartarAlerta = (id: string) => {
-    setAlertas(
-      alertas.map((alerta) =>
-        alerta.id === id ? { ...alerta, estado: AlertStatus.DISCARDED } : alerta
-      )
-    );
+  // 🔹 Descartar alerta (actualiza en el contexto)
+  const handleDescartarAlerta = async (id: string) => {
+    const alerta = alerts.find((a) => a.id === id);
+    if (!alerta) return;
+
+    await updateAlert({ ...alerta, estado: AlertStatus.DISCARDED });
+
     toast({
       title: "Alerta descartada",
       description: "La alerta ha sido descartada",
     });
   };
 
+  // 🔹 Colores por prioridad
   const getPrioridadColor = (prioridad: string) => {
     const colors = {
       baja: "text-muted-foreground",
@@ -99,6 +126,66 @@ export default function AlertasPage() {
     return colors[prioridad as keyof typeof colors] || colors.baja;
   };
 
+  const handleCrearAlerta = async () => {
+    if (
+      !nuevaAlerta.titulo ||
+      !nuevaAlerta.descripcion ||
+      !nuevaAlerta.tipo ||
+      !nuevaAlerta.prioridad
+    ) {
+      toast({
+        title: "Campos incompletos",
+        description: "Por favor completa todos los campos requeridos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const alerta: Alerta = {
+      id: crypto.randomUUID(),
+      titulo: nuevaAlerta.titulo,
+      descripcion: nuevaAlerta.descripcion,
+      tipo: nuevaAlerta.tipo as AlertType,
+      prioridad: nuevaAlerta.prioridad as AlertPriority,
+      estado: AlertStatus.ACTIVE,
+      fechaCreacion: new Date().toISOString(),
+      fechaVencimiento: nuevaAlerta.fechaVencimiento
+        ? new Date(nuevaAlerta.fechaVencimiento).toISOString()
+        : null,
+      lote: nuevaAlerta.lote,
+      accionesRecomendadas: [
+        "Verificar parámetro",
+        "Tomar medidas correctivas",
+      ],
+      parametros: {
+        valorActual: Number(nuevaAlerta.valorActual) || 0,
+        valorEsperado: Number(nuevaAlerta.valorEsperado) || 0,
+        unidad: nuevaAlerta.unidad,
+      },
+    };
+
+    await addAlert(alerta);
+
+    toast({
+      title: "Alerta creada",
+      description: "La nueva alerta fue agregada exitosamente",
+    });
+
+    // Limpia formulario
+    setNuevaAlerta({
+      titulo: "",
+      descripcion: "",
+      tipo: "",
+      prioridad: "",
+      lote: "",
+      valorActual: "",
+      valorEsperado: "",
+      unidad: "",
+      fechaVencimiento: "",
+    });
+  };
+
+  // 🔹 Iconos por tipo
   const getTipoIcon = (tipo: string) => {
     const icons = {
       salud: AlertTriangle,
@@ -111,17 +198,18 @@ export default function AlertasPage() {
     return icons[tipo as keyof typeof icons] || AlertTriangle;
   };
 
+  // 🔹 Estadísticas
   const estadisticas = {
-    total: alertas.length,
-    activas: alertas.filter((a) => a.estado === "activa").length,
-    criticas: alertas.filter(
-      (a) => a.prioridad === "critica" && a.estado === "activa"
+    total: alerts.length,
+    activas: alerts.filter((a) => a.estado === AlertStatus.ACTIVE).length,
+    criticas: alerts.filter(
+      (a) => a.prioridad === "critica" && a.estado === AlertStatus.ACTIVE
     ).length,
-    vencidas: alertas.filter(
+    vencidas: alerts.filter(
       (a) =>
         a.fechaVencimiento &&
         new Date(a.fechaVencimiento) < new Date() &&
-        a.estado === "activa"
+        a.estado === AlertStatus.ACTIVE
     ).length,
   };
 
@@ -140,16 +228,163 @@ export default function AlertasPage() {
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline" className="gap-2">
+          {/* <Button variant="outline" className="gap-2">
             <Settings className="h-4 w-4" />
             Configurar Alertas
-          </Button>
+          </Button> */}
           <Button className="gap-2">
             <Bell className="h-4 w-4" />
             {estadisticas.activas} Activas
           </Button>
         </div>
       </div>
+
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button className="gap-2">
+            <AlertTriangle className="h-4 w-4" />
+            Nueva Alerta
+          </Button>
+        </DialogTrigger>
+
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Crear Nueva Alerta</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <Input
+              placeholder="Título"
+              value={nuevaAlerta.titulo}
+              onChange={(e) =>
+                setNuevaAlerta({ ...nuevaAlerta, titulo: e.target.value })
+              }
+            />
+
+            <Input
+              placeholder="Descripción"
+              value={nuevaAlerta.descripcion}
+              onChange={(e) =>
+                setNuevaAlerta({ ...nuevaAlerta, descripcion: e.target.value })
+              }
+            />
+
+            {/* Tipo de Alerta */}
+            <Select
+              value={nuevaAlerta.tipo}
+              onValueChange={(v) =>
+                setNuevaAlerta({ ...nuevaAlerta, tipo: v as AlertType })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Tipo de alerta" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={AlertType.HEALTH}>Salud</SelectItem>
+                <SelectItem value={AlertType.PRODUCTION}>Producción</SelectItem>
+                <SelectItem value={AlertType.MORTALITY}>Mortalidad</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Prioridad */}
+            <Select
+              value={nuevaAlerta.prioridad}
+              onValueChange={(v) =>
+                setNuevaAlerta({
+                  ...nuevaAlerta,
+                  prioridad: v as AlertPriority,
+                })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Prioridad" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={AlertPriority.LOW}>Baja</SelectItem>
+                <SelectItem value={AlertPriority.MEDIUM}>Media</SelectItem>
+                <SelectItem value={AlertPriority.HIGH}>Alta</SelectItem>
+                <SelectItem value={AlertPriority.CRITICAL}>Crítica</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Lote */}
+            <Select
+              value={nuevaAlerta.lote}
+              onValueChange={(v) => setNuevaAlerta({ ...nuevaAlerta, lote: v })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar lote" />
+              </SelectTrigger>
+              <SelectContent>
+                {lotes.map((lote) => (
+                  <SelectItem key={lote.id} value={lote.nombre}>
+                    {lote.nombre}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Valores */}
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <Label>Valor Actual</Label>
+                <Input
+                  type="number"
+                  value={nuevaAlerta.valorActual}
+                  onChange={(e) =>
+                    setNuevaAlerta({
+                      ...nuevaAlerta,
+                      valorActual: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <Label>Valor Esperado</Label>
+                <Input
+                  type="number"
+                  value={nuevaAlerta.valorEsperado}
+                  onChange={(e) =>
+                    setNuevaAlerta({
+                      ...nuevaAlerta,
+                      valorEsperado: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <Label>Unidad</Label>
+                <Input
+                  placeholder="Ej: °C, kg, %"
+                  value={nuevaAlerta.unidad}
+                  onChange={(e) =>
+                    setNuevaAlerta({ ...nuevaAlerta, unidad: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+
+            {/* Fecha de vencimiento */}
+            <div>
+              <Label>Fecha de vencimiento</Label>
+              <Input
+                type="date"
+                value={nuevaAlerta.fechaVencimiento}
+                onChange={(e) =>
+                  setNuevaAlerta({
+                    ...nuevaAlerta,
+                    fechaVencimiento: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <Button onClick={handleCrearAlerta} className="w-full mt-2">
+              Guardar Alerta
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Estadísticas Resumen */}
       <div className="grid gap-4 md:grid-cols-4">
