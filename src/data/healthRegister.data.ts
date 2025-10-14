@@ -1,7 +1,7 @@
 import { RegistroSalud } from "@/models/healthRegister.model";
 import { RecordType } from "@/models/recordType.model";
 
-export const registrosData: RegistroSalud[] = [
+export let registrosData: RegistroSalud[] = [
   {
     id: "1",
     polloId: "2",
@@ -49,3 +49,7 @@ export const registrosData: RegistroSalud[] = [
     observaciones: "Vacunación de refuerzo completada sin complicaciones"
   }
 ]
+
+export function setRegistrosData(newData: RegistroSalud[]) {
+  registrosData = newData;
+}
