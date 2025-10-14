@@ -12,6 +12,8 @@ import SaludPage from "./pages/SaludPage";
 import AlertasPage from "./pages/AlertasPage";
 import ReportesPage from "./pages/ReportesPage";
 import NotFound from "./pages/NotFound";
+import { PolloProvider } from "./contexts/ChickenContext";
+import { LoteProvider } from "./contexts/LoteContext";
 
 const queryClient = new QueryClient();
 
@@ -35,15 +37,19 @@ const App = () => (
                 </div>
               </header>
               <main className="flex-1 overflow-auto">
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/lotes" element={<LotesPage />} />
-                  <Route path="/pollos" element={<PollosPage />} />
-                  <Route path="/salud" element={<SaludPage />} />
-                  <Route path="/alertas" element={<AlertasPage />} />
-                  <Route path="/reportes" element={<ReportesPage />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+                <LoteProvider>
+                  <PolloProvider>
+                    <Routes>
+                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/lotes" element={<LotesPage />} />
+                      <Route path="/pollos" element={<PollosPage />} />
+                      <Route path="/salud" element={<SaludPage />} />
+                      <Route path="/alertas" element={<AlertasPage />} />
+                      <Route path="/reportes" element={<ReportesPage />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </PolloProvider>
+                </LoteProvider>
               </main>
             </div>
           </div>
