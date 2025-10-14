@@ -1,7 +1,7 @@
 import { Lote } from "@/models/lote.model";
 import { Status } from "@/models/status.model";
 
-export const lotesData: Lote[] = [
+export let lotesData: Lote[] = [
   {
     id: "1",
     nombre: "Lote A - Ene 2024",
@@ -51,3 +51,7 @@ export const lotesData: Lote[] = [
     observaciones: "Completado exitosamente. Buen rendimiento"
   }
 ]
+
+export function setLotesData(newData: Lote[]) {
+  lotesData = newData;
+}

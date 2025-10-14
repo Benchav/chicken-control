@@ -1,17 +1,65 @@
-import { MetricCard } from "@/components/dashboard/MetricCard"
-import { AlertCard } from "@/components/dashboard/AlertCard"
-import { GrowthChart } from "@/components/dashboard/GrowthChart"
-import { Users, Bird, Heart, Skull, TrendingUp, AlertTriangle } from "lucide-react"
-import farmHero from "@/assets/farm-hero.jpg"
+import { MetricCard } from "@/components/dashboard/MetricCard";
+import { AlertCard } from "@/components/dashboard/AlertCard";
+import { GrowthChart } from "@/components/dashboard/GrowthChart";
+import {
+  Bird,
+  Heart,
+  Skull,
+  AlertTriangle,
+} from "lucide-react";
+import farmHero from "@/assets/farm-hero.jpg";
+import { Status } from "@/models/status.model";
+import { useLoteContext } from "@/contexts/LoteContext";
 
 export default function Dashboard() {
+  const { lotes, loadingLotes, errorLotes } = useLoteContext();
+
+  if (loadingLotes) {
+    return (
+      <div className="flex justify-center items-center h-screen text-muted-foreground">
+        Cargando datos de lotes...
+      </div>
+    );
+  }
+
+  if (errorLotes) {
+    return (
+      <div className="flex justify-center items-center h-screen text-destructive">
+        {errorLotes}
+      </div>
+    );
+  }
+
+  // Filtrar solo los lotes activos
+  const lotesActivos = lotes.filter((lote) => lote.estado === Status.ACTIVE);
+
+  // Calcular métricas
+  const totalPollos = lotesActivos.reduce(
+    (sum, lote) => sum + lote.cantidadActual,
+    0
+  );
+  const totalInicial = lotesActivos.reduce(
+    (sum, lote) => sum + lote.cantidadInicial,
+    0
+  );
+
+  const mortalidadPromedio =
+    lotesActivos.length > 0
+      ? lotesActivos.reduce((sum, l) => sum + l.mortalidad, 0) /
+        lotesActivos.length
+      : 0;
+
+  const pollosMuertos = totalInicial - totalPollos;
+  const pollosEnfermos = Math.round(totalPollos * 0.02);
+  const pollosSanos = totalPollos - pollosEnfermos;
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="relative h-48 md:h-64 overflow-hidden">
-        <img 
-          src={farmHero} 
-          alt="Granja de pollos moderna" 
+        <img
+          src={farmHero}
+          alt="Granja de pollos moderna"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/40 to-transparent" />
@@ -31,32 +79,36 @@ export default function Dashboard() {
         <div className="grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
           <MetricCard
             title="Total de Pollos"
-            value="2,847"
-            subtitle="En 3 lotes activos"
+            value={totalPollos.toLocaleString()}
+            subtitle={`En ${lotesActivos.length} lotes activos`}
             icon={<Bird />}
             trend={{ value: 12, isPositive: true }}
             variant="default"
           />
           <MetricCard
             title="Pollos Sanos"
-            value="2,760"
-            subtitle="97% del total"
+            value={pollosSanos.toLocaleString()}
+            subtitle={`${((pollosSanos / totalPollos) * 100 || 0).toFixed(
+              1
+            )}% del total`}
             icon={<Heart />}
             trend={{ value: 3, isPositive: true }}
             variant="success"
           />
           <MetricCard
             title="Pollos Enfermos"
-            value="62"
-            subtitle="2.2% del total"
+            value={pollosEnfermos.toLocaleString()}
+            subtitle={`${((pollosEnfermos / totalPollos) * 100 || 0).toFixed(
+              1
+            )}% del total`}
             icon={<AlertTriangle />}
             trend={{ value: -5, isPositive: false }}
             variant="warning"
           />
           <MetricCard
             title="Mortalidad"
-            value="25"
-            subtitle="0.8% del total"
+            value={pollosMuertos.toLocaleString()}
+            subtitle={`${mortalidadPromedio.toFixed(1)}% promedio`}
             icon={<Skull />}
             trend={{ value: -2, isPositive: true }}
             variant="destructive"
@@ -66,10 +118,13 @@ export default function Dashboard() {
         {/* Gráfico de Crecimiento */}
         <GrowthChart />
 
-        {/* Alertas Recientes */}
+        {/* Alertas Recientes y Resumen de Lotes */}
         <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2">
+          {/* Alertas */}
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-foreground">Alertas Recientes</h2>
+            <h2 className="text-xl font-semibold text-foreground">
+              Alertas Recientes
+            </h2>
             <div className="space-y-3">
               <AlertCard
                 type="health"
@@ -103,86 +158,63 @@ export default function Dashboard() {
 
           {/* Resumen de Lotes */}
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-foreground">Resumen de Lotes</h2>
+            <h2 className="text-xl font-semibold text-foreground">
+              Resumen de Lotes
+            </h2>
             <div className="space-y-3">
-              <div className="p-4 rounded-lg border border-border bg-card">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-card-foreground">Lote A</h3>
-                  <span className="text-sm text-success font-medium">Activo</span>
-                </div>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">Pollos:</span>
-                    <span className="ml-2 font-medium">1,050</span>
+              {lotes.map((lote) => (
+                <div
+                  key={lote.id}
+                  className="p-4 rounded-lg border border-border bg-card"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-medium text-card-foreground">
+                      {lote.nombre}
+                    </h3>
+                    <span
+                      className={`text-sm font-medium ${
+                        lote.estado === Status.ACTIVE
+                          ? "text-success"
+                          : "text-warning"
+                      }`}
+                    >
+                      {lote.estado === Status.ACTIVE
+                        ? "Activo"
+                        : "Finalizado"}
+                    </span>
                   </div>
-                  <div>
-                    <span className="text-muted-foreground">Edad:</span>
-                    <span className="ml-2 font-medium">4 semanas</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Peso prom:</span>
-                    <span className="ml-2 font-medium">1.2kg</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Mortalidad:</span>
-                    <span className="ml-2 font-medium">0.5%</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-lg border border-border bg-card">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-card-foreground">Lote B</h3>
-                  <span className="text-sm text-warning font-medium">Listo</span>
-                </div>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">Pollos:</span>
-                    <span className="ml-2 font-medium">890</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Edad:</span>
-                    <span className="ml-2 font-medium">7 semanas</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Peso prom:</span>
-                    <span className="ml-2 font-medium">2.5kg</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Mortalidad:</span>
-                    <span className="ml-2 font-medium">1.2%</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-lg border border-border bg-card">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-card-foreground">Lote C</h3>
-                  <span className="text-sm text-success font-medium">Activo</span>
-                </div>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">Pollos:</span>
-                    <span className="ml-2 font-medium">907</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Edad:</span>
-                    <span className="ml-2 font-medium">6 semanas</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Peso prom:</span>
-                    <span className="ml-2 font-medium">2.1kg</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Mortalidad:</span>
-                    <span className="ml-2 font-medium">0.8%</span>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-muted-foreground">Pollos:</span>
+                      <span className="ml-2 font-medium">
+                        {lote.cantidadActual}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Inicio:</span>
+                      <span className="ml-2 font-medium">
+                        {new Date(lote.fechaInicio).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Peso prom:</span>
+                      <span className="ml-2 font-medium">
+                        {lote.pesoPromedio}kg
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Mortalidad:</span>
+                      <span className="ml-2 font-medium">
+                        {lote.mortalidad}%
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
