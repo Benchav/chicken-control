@@ -5,7 +5,7 @@ import ChickenService from "@/services/chicken.service";
 
 const PolloContext = createContext<ChickenContextType | undefined>(undefined);  
 
-export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const PolloProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [pollos, setChickens] = useState<Pollo[]>([]);
   const [loadingPollos, setLoading] = useState<boolean>(false);
   const [errorPollos, setError] = useState<string>();
