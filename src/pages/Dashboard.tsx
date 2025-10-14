@@ -10,11 +10,14 @@ import {
 import farmHero from "@/assets/farm-hero.jpg";
 import { Status } from "@/models/status.model";
 import { useLoteContext } from "@/contexts/LoteContext";
+import { usePolloContext } from "@/contexts/ChickenContext";
+import { Health } from "@/models/health.model";
 
 export default function Dashboard() {
   const { lotes, loadingLotes, errorLotes } = useLoteContext();
+  const { pollos, loadingPollos, errorPollos } = usePolloContext();
 
-  if (loadingLotes) {
+  if (loadingLotes || loadingPollos) {
     return (
       <div className="flex justify-center items-center h-screen text-muted-foreground">
         Cargando datos de lotes...
@@ -22,10 +25,10 @@ export default function Dashboard() {
     );
   }
 
-  if (errorLotes) {
+  if (errorLotes || errorPollos) {
     return (
       <div className="flex justify-center items-center h-screen text-destructive">
-        {errorLotes}
+        {errorLotes || errorPollos}
       </div>
     );
   }
@@ -50,7 +53,7 @@ export default function Dashboard() {
       : 0;
 
   const pollosMuertos = totalInicial - totalPollos;
-  const pollosEnfermos = Math.round(totalPollos * 0.02);
+  const pollosEnfermos = pollos.filter(p => p.estado === Health.SICK).length;
   const pollosSanos = totalPollos - pollosEnfermos;
 
   return (

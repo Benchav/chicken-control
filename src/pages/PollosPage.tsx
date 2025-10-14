@@ -1,30 +1,66 @@
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Edit, Trash2, Search, Filter, Heart, AlertTriangle, Skull } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { pollosData } from "@/data/pollos.data"
-import { Pollo } from "@/models/pollo.model"
-import { Health } from "@/models/health.model"
-import { lotesData } from "@/data/lotes.data"
-
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Search,
+  Filter,
+  Heart,
+  AlertTriangle,
+  Skull,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { pollosData } from "@/data/pollos.data";
+import { Pollo } from "@/models/pollo.model";
+import { Health } from "@/models/health.model";
+import { lotesData } from "@/data/lotes.data";
+import { usePolloContext } from "@/contexts/ChickenContext";
 
 export default function PollosPage() {
-  const [pollos, setPollos] = useState<Pollo[]>(pollosData)
-  const [filteredPollos, setFilteredPollos] = useState<Pollo[]>(pollosData)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [editingPollo, setEditingPollo] = useState<Pollo | null>(null)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedLote, setSelectedLote] = useState("Todos")
-  const [selectedEstado, setSelectedEstado] = useState("Todos")
-  const { toast } = useToast()
+  const {
+    pollos,
+    loadingPollos,
+    errorPollos,
+    fetchPollos,
+    createPollo,
+    updatePollo,
+    deletePollo,
+  } = usePolloContext();
+  const { toast } = useToast();
 
+  const [filteredPollos, setFilteredPollos] = useState<Pollo[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingPollo, setEditingPollo] = useState<Pollo | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedLote, setSelectedLote] = useState("Todos");
+  const [selectedEstado, setSelectedEstado] = useState("Todos");
   const [formData, setFormData] = useState({
     identificador: "",
     lote: "",
@@ -32,8 +68,8 @@ export default function PollosPage() {
     fechaNacimiento: "",
     pesoActual: "",
     estado: "sano",
-    observaciones: ""
-  })
+    observaciones: "",
+  });
 
   const resetForm = () => {
     setFormData({
@@ -43,85 +79,78 @@ export default function PollosPage() {
       fechaNacimiento: "",
       pesoActual: "",
       estado: "sano",
-      observaciones: ""
-    })
-    setEditingPollo(null)
-  }
+      observaciones: "",
+    });
+    setEditingPollo(null);
+  };
 
-  const handleFilter = () => {
-    let filtered = pollos
-
-    if (searchTerm) {
-      filtered = filtered.filter(pollo => 
-        pollo.identificador.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        pollo.lote.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }
-
-    if (selectedLote !== "Todos") {
-      filtered = filtered.filter(pollo => pollo.lote === selectedLote)
-    }
-
-    if (selectedEstado !== "Todos") {
-      filtered = filtered.filter(pollo => pollo.estado === selectedEstado)
-    }
-
-    setFilteredPollos(filtered)
-  }
-
-  // Auto-filter when filters change
+  // Filtrado de pollos
   useEffect(() => {
-    handleFilter()
-  }, [searchTerm, selectedLote, selectedEstado, pollos])
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (editingPollo) {
-      setPollos(pollos.map(pollo => 
-        pollo.id === editingPollo.id 
-          ? {
-              ...pollo,
-              identificador: formData.identificador,
-              lote: formData.lote,
-              raza: formData.raza,
-              fechaNacimiento: formData.fechaNacimiento,
-              pesoActual: parseFloat(formData.pesoActual),
-              estado: formData.estado as Health,
-              observaciones: formData.observaciones,
-              ultimaRevision: new Date().toISOString().split('T')[0]
-            }
-          : pollo
-      ))
-      toast({
-        title: "Pollo actualizado",
-        description: "Los datos del pollo han sido actualizados exitosamente"
-      })
-    } else {
-      const newPollo: Pollo = {
-        id: Date.now().toString(),
-        identificador: formData.identificador,
-        lote: formData.lote,
-        raza: formData.raza,
-        fechaNacimiento: formData.fechaNacimiento,
-        pesoActual: parseFloat(formData.pesoActual),
-        estado: formData.estado as Health,
-        observaciones: formData.observaciones,
-        ultimaRevision: new Date().toISOString().split('T')[0]
-      }
-      setPollos([...pollos, newPollo])
-      toast({
-        title: "Pollo registrado",
-        description: "El nuevo pollo ha sido registrado exitosamente"
-      })
+    let filtered = pollos;
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (p) =>
+          p.identificador.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.lote.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
-    
-    setIsDialogOpen(false)
-    resetForm()
-  }
+    if (selectedLote !== "Todos")
+      filtered = filtered.filter((p) => p.lote === selectedLote);
+    if (selectedEstado !== "Todos")
+      filtered = filtered.filter((p) => p.estado === selectedEstado);
+    setFilteredPollos(filtered);
+  }, [pollos, searchTerm, selectedLote, selectedEstado]);
+
+  // Manejo de submit
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      if (editingPollo) {
+        await updatePollo(editingPollo.id, {
+          identificador: formData.identificador,
+          lote: formData.lote,
+          raza: formData.raza,
+          fechaNacimiento: formData.fechaNacimiento,
+          pesoActual: parseFloat(formData.pesoActual),
+          estado: formData.estado as Health,
+          observaciones: formData.observaciones,
+          ultimaRevision: new Date().toISOString().split("T")[0],
+        });
+        toast({
+          title: "Pollo actualizado",
+          description: "Datos actualizados exitosamente",
+        });
+      } else {
+        await createPollo({
+          identificador: formData.identificador,
+          lote: formData.lote,
+          raza: formData.raza,
+          fechaNacimiento: formData.fechaNacimiento,
+          pesoActual: parseFloat(formData.pesoActual),
+          estado: formData.estado as Health,
+          observaciones: formData.observaciones,
+          ultimaRevision: new Date().toISOString().split("T")[0],
+        });
+        toast({
+          title: "Pollo registrado",
+          description: "Nuevo pollo agregado",
+        });
+      }
+      setIsDialogOpen(false);
+      resetForm();
+      await fetchPollos(); // refrescar lista
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Ocurrió un error al guardar",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleEdit = (pollo: Pollo) => {
-    setEditingPollo(pollo)
+    setEditingPollo(pollo);
     setFormData({
       identificador: pollo.identificador,
       lote: pollo.lote,
@@ -129,72 +158,78 @@ export default function PollosPage() {
       fechaNacimiento: pollo.fechaNacimiento,
       pesoActual: pollo.pesoActual.toString(),
       estado: pollo.estado,
-      observaciones: pollo.observaciones
-    })
-    setIsDialogOpen(true)
-  }
+      observaciones: pollo.observaciones,
+    });
+    setIsDialogOpen(true);
+  };
 
-  const handleDelete = (id: string) => {
-    setPollos(pollos.filter(pollo => pollo.id !== id))
+  const handleDelete = async (id: string) => {
+    await deletePollo(id);
     toast({
       title: "Pollo eliminado",
-      description: "El registro del pollo ha sido eliminado del sistema",
-      variant: "destructive"
-    })
-  }
+      description: "Registro eliminado",
+      variant: "destructive",
+    });
+    await fetchPollos();
+  };
 
-  const handleQuickStatusChange = (id: string, newStatus: Health) => {
-    setPollos(pollos.map(pollo => 
-      pollo.id === id 
-        ? { 
-            ...pollo, 
-            estado: newStatus,
-            ultimaRevision: new Date().toISOString().split('T')[0],
-            ...(newStatus === "muerto" && { pesoActual: 0 })
-          }
-        : pollo
-    ))
+  const handleQuickStatusChange = async (id: string, newStatus: Health) => {
+    await updatePollo(id, {
+      estado: newStatus,
+      ultimaRevision: new Date().toISOString().split("T")[0],
+      ...(newStatus === "muerto" ? { pesoActual: 0 } : {}),
+    });
     toast({
-      title: `Estado actualizado`,
-      description: `El pollo ha sido marcado como ${newStatus}`,
-      variant: newStatus === "muerto" ? "destructive" : "default"
-    })
-  }
+      title: "Estado actualizado",
+      description: `Pollo marcado como ${newStatus}`,
+    });
+    await fetchPollos();
+  };
 
   const getEstadoBadge = (estado: string) => {
     const config = {
       sano: { variant: "default" as const, icon: Heart, color: "text-success" },
-      enfermo: { variant: "secondary" as const, icon: AlertTriangle, color: "text-warning" },
-      muerto: { variant: "destructive" as const, icon: Skull, color: "text-destructive" }
-    }
-    return config[estado as keyof typeof config] || config.sano
-  }
+      enfermo: {
+        variant: "secondary" as const,
+        icon: AlertTriangle,
+        color: "text-warning",
+      },
+      muerto: {
+        variant: "destructive" as const,
+        icon: Skull,
+        color: "text-destructive",
+      },
+    };
+    return config[estado as keyof typeof config] || config.sano;
+  };
 
   const getEdadEnSemanas = (fechaNacimiento: string) => {
-    const nacimiento = new Date(fechaNacimiento)
-    const ahora = new Date()
-    const diferencia = ahora.getTime() - nacimiento.getTime()
-    return Math.floor(diferencia / (1000 * 60 * 60 * 24 * 7))
-  }
+    const nacimiento = new Date(fechaNacimiento);
+    const ahora = new Date();
+    const diferencia = ahora.getTime() - nacimiento.getTime();
+    return Math.floor(diferencia / (1000 * 60 * 60 * 24 * 7));
+  };
 
   const statsData = {
     total: pollos.length,
-    sanos: pollos.filter(p => p.estado === "sano").length,
-    enfermos: pollos.filter(p => p.estado === "enfermo").length,
-    muertos: pollos.filter(p => p.estado === "muerto").length
-  }
+    sanos: pollos.filter((p) => p.estado === "sano").length,
+    enfermos: pollos.filter((p) => p.estado === "enfermo").length,
+    muertos: pollos.filter((p) => p.estado === "muerto").length,
+  };
 
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Gestión de Pollos</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Gestión de Pollos
+          </h1>
           <p className="text-muted-foreground">
             Control individual de todos los pollos del sistema
           </p>
         </div>
-        
+
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={resetForm} className="gap-2">
@@ -215,37 +250,56 @@ export default function PollosPage() {
                   <Input
                     id="identificador"
                     value={formData.identificador}
-                    onChange={(e) => setFormData({...formData, identificador: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        identificador: e.target.value,
+                      })
+                    }
                     placeholder="A001, B002, etc."
                     required
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lote">Lote</Label>
-                  <Select value={formData.lote} onValueChange={(value) => setFormData({...formData, lote: value})}>
+                  <Select
+                    value={formData.lote}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, lote: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Seleccionar lote" />
                     </SelectTrigger>
                     <SelectContent>
-                      {lotesData.slice(1).map(lote => (
-                        <SelectItem key={lote.id} value={lote.id}>{lote.nombre}</SelectItem>
+                      {lotesData.slice(1).map((lote) => (
+                        <SelectItem key={lote.id} value={lote.id}>
+                          {lote.nombre}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="raza">Raza</Label>
-                  <Select value={formData.raza} onValueChange={(value) => setFormData({...formData, raza: value})}>
+                  <Select
+                    value={formData.raza}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, raza: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Seleccionar raza" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Ross 308">Ross 308</SelectItem>
                       <SelectItem value="Cobb 500">Cobb 500</SelectItem>
-                      <SelectItem value="Hubbard Classic">Hubbard Classic</SelectItem>
+                      <SelectItem value="Hubbard Classic">
+                        Hubbard Classic
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -255,7 +309,12 @@ export default function PollosPage() {
                     id="fechaNacimiento"
                     type="date"
                     value={formData.fechaNacimiento}
-                    onChange={(e) => setFormData({...formData, fechaNacimiento: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        fechaNacimiento: e.target.value,
+                      })
+                    }
                     required
                   />
                 </div>
@@ -269,14 +328,21 @@ export default function PollosPage() {
                     type="number"
                     step="0.01"
                     value={formData.pesoActual}
-                    onChange={(e) => setFormData({...formData, pesoActual: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, pesoActual: e.target.value })
+                    }
                     placeholder="1.25"
                     required
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="estado">Estado</Label>
-                  <Select value={formData.estado} onValueChange={(value) => setFormData({...formData, estado: value})}>
+                  <Select
+                    value={formData.estado}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, estado: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -288,19 +354,25 @@ export default function PollosPage() {
                   </Select>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="observaciones">Observaciones</Label>
                 <Input
                   id="observaciones"
                   value={formData.observaciones}
-                  onChange={(e) => setFormData({...formData, observaciones: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, observaciones: e.target.value })
+                  }
                   placeholder="Notas médicas, comportamiento, etc."
                 />
               </div>
-              
+
               <div className="flex gap-2 justify-end">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                >
                   Cancelar
                 </Button>
                 <Button type="submit">
@@ -330,9 +402,12 @@ export default function PollosPage() {
             <Heart className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">{statsData.sanos}</div>
+            <div className="text-2xl font-bold text-success">
+              {statsData.sanos}
+            </div>
             <p className="text-xs text-muted-foreground">
-              {((statsData.sanos / statsData.total) * 100).toFixed(1)}% del total
+              {((statsData.sanos / statsData.total) * 100).toFixed(1)}% del
+              total
             </p>
           </CardContent>
         </Card>
@@ -343,9 +418,12 @@ export default function PollosPage() {
             <AlertTriangle className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-warning">{statsData.enfermos}</div>
+            <div className="text-2xl font-bold text-warning">
+              {statsData.enfermos}
+            </div>
             <p className="text-xs text-muted-foreground">
-              {((statsData.enfermos / statsData.total) * 100).toFixed(1)}% del total
+              {((statsData.enfermos / statsData.total) * 100).toFixed(1)}% del
+              total
             </p>
           </CardContent>
         </Card>
@@ -356,9 +434,12 @@ export default function PollosPage() {
             <Skull className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-destructive">{statsData.muertos}</div>
+            <div className="text-2xl font-bold text-destructive">
+              {statsData.muertos}
+            </div>
             <p className="text-xs text-muted-foreground">
-              {((statsData.muertos / statsData.total) * 100).toFixed(1)}% mortalidad
+              {((statsData.muertos / statsData.total) * 100).toFixed(1)}%
+              mortalidad
             </p>
           </CardContent>
         </Card>
@@ -388,8 +469,10 @@ export default function PollosPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {lotesData.map(lote => (
-                    <SelectItem key={lote.id} value={lote.id}>{lote.nombre}</SelectItem>
+                  {lotesData.map((lote) => (
+                    <SelectItem key={lote.id} value={lote.nombre}>
+                      {lote.nombre}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -414,7 +497,9 @@ export default function PollosPage() {
       {/* Tabla de Pollos */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Lista de Pollos ({filteredPollos.length})</CardTitle>
+          <CardTitle className="text-lg">
+            Lista de Pollos ({filteredPollos.length})
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -433,16 +518,24 @@ export default function PollosPage() {
               </TableHeader>
               <TableBody>
                 {filteredPollos.map((pollo) => {
-                  const estadoConfig = getEstadoBadge(pollo.estado)
-                  const IconComponent = estadoConfig.icon
-                  
+                  const estadoConfig = getEstadoBadge(pollo.estado);
+                  const IconComponent = estadoConfig.icon;
+
                   return (
                     <TableRow key={pollo.id}>
-                      <TableCell className="font-medium">{pollo.identificador}</TableCell>
+                      <TableCell className="font-medium">
+                        {pollo.identificador}
+                      </TableCell>
                       <TableCell>{pollo.lote}</TableCell>
                       <TableCell>{pollo.raza}</TableCell>
-                      <TableCell>{getEdadEnSemanas(pollo.fechaNacimiento)} sem</TableCell>
-                      <TableCell>{pollo.estado === "muerto" ? "-" : `${pollo.pesoActual}kg`}</TableCell>
+                      <TableCell>
+                        {getEdadEnSemanas(pollo.fechaNacimiento)} sem
+                      </TableCell>
+                      <TableCell>
+                        {pollo.estado === "muerto"
+                          ? "-"
+                          : `${pollo.pesoActual}kg`}
+                      </TableCell>
                       <TableCell>
                         <Badge variant={estadoConfig.variant} className="gap-1">
                           <IconComponent className="h-3 w-3" />
@@ -467,7 +560,9 @@ export default function PollosPage() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleQuickStatusChange(pollo.id, Health.SICK)}
+                                onClick={() =>
+                                  handleQuickStatusChange(pollo.id, Health.SICK)
+                                }
                                 className="h-7 px-2 text-warning hover:text-warning"
                                 title="Marcar como enfermo"
                               >
@@ -476,7 +571,9 @@ export default function PollosPage() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleQuickStatusChange(pollo.id, Health.DEAD)}
+                                onClick={() =>
+                                  handleQuickStatusChange(pollo.id, Health.DEAD)
+                                }
                                 className="h-7 px-2 text-destructive hover:text-destructive"
                                 title="Marcar como muerto"
                               >
@@ -495,7 +592,7 @@ export default function PollosPage() {
                         </div>
                       </TableCell>
                     </TableRow>
-                  )
+                  );
                 })}
               </TableBody>
             </Table>
@@ -503,5 +600,5 @@ export default function PollosPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
