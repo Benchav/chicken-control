@@ -1,7 +1,7 @@
 import { Health } from "@/models/health.model";
 import { Pollo } from "@/models/pollo.model";
 
-export const pollosData: Pollo[] = [
+export let pollosData: Pollo[] = [
   {
     id: "1",
     identificador: "A001",
@@ -58,3 +58,7 @@ export const pollosData: Pollo[] = [
     ultimaRevision: "2024-02-20"
   }
 ]
+
+export function setPollosData(newData: Pollo[]) {
+  pollosData = newData;
+}
