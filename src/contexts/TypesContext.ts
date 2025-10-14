@@ -6,7 +6,9 @@ export type ChickenContextType = {
   loadingPollos: boolean;
   errorPollos?: string;
   fetchPollos: () => Promise<void>;
-  //fetchPollosByLote: (loteId: string) => Promise<void>;
+  createPollo: (newPollo: Omit<Pollo, "id">) => Promise<void>;
+  updatePollo: (id: string, updatedData: Partial<Pollo>) => Promise<void>;
+  deletePollo: (id: string) => Promise<void>;
 };
 
 export type LoteContextType = {
