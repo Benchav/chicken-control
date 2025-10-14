@@ -1,3 +1,5 @@
+import { Health } from "@/models/health.model";
+import { RegistroSalud } from "@/models/healthRegister.model";
 import { Lote } from "@/models/lote.model";
 import { Pollo } from "@/models/pollo.model";
 
@@ -19,4 +21,14 @@ export type LoteContextType = {
   addLote: (lote: Omit<Lote, "id">) => Promise<void>;
   updateLote: (lote: Lote) => Promise<void>;
   deleteLote: (id: string) => Promise<void>;
+};
+
+export type HealthContextType = {
+  healths: RegistroSalud[];
+  loadingHealths: boolean;
+  errorHealths?: string;
+  fetchHealths: () => Promise<void>;
+  addHealth: (data: Omit<RegistroSalud, "id">) => Promise<void>;
+  updateHealth: (data: RegistroSalud) => Promise<void>;
+  deleteHealth: (id: string) => Promise<void>;
 };
