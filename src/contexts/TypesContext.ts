@@ -1,4 +1,4 @@
-import { Health } from "@/models/health.model";
+import { Alerta } from "@/models/alert.model";
 import { RegistroSalud } from "@/models/healthRegister.model";
 import { Lote } from "@/models/lote.model";
 import { Pollo } from "@/models/pollo.model";
@@ -31,4 +31,14 @@ export type HealthContextType = {
   addHealth: (data: Omit<RegistroSalud, "id">) => Promise<void>;
   updateHealth: (data: RegistroSalud) => Promise<void>;
   deleteHealth: (id: string) => Promise<void>;
+};
+
+export type AlertContextType = {
+  alerts: Alerta[];
+  loadingAlerts: boolean;
+  errorAlerts?: string;
+  fetchAlerts: () => Promise<void>;
+  addAlert: (data: Omit<Alerta, "id">) => Promise<void>;
+  updateAlert: (data: Alerta) => Promise<void>;
+  delete: (id: string) => Promise<void>;
 };
