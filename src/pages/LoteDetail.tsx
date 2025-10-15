@@ -31,6 +31,21 @@ import {
   Trash2,
   Stethoscope,
 } from "lucide-react";
+import { Pill, Activity, Calendar, TrendingUp } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from "recharts";
+import { sintomasComunes } from "@/data/commonSymptoms.data";
+import { medicamentosComunes } from "@/data/commonMedications.data";
 import { useHealthContext } from "@/contexts/HealthContext";
 import { RecordType } from "@/models/recordType.model";
 import { RegistroSalud } from "@/models/healthRegister.model";
@@ -317,6 +332,102 @@ const LoteDetail = () => {
     filteredPollos.length;
   const sanosCount = Math.max(0, loteTotal - enfermosCount - muertosCount);
 
+  // Health records filtered to this lote
+  const healthsForLote = useMemo(() => {
+    if (!loteInfo) return healths.filter((h) => h.lote === loteId || h.lote === loteId);
+    return healths.filter((h) => h.lote === loteInfo.id || h.lote === loteInfo.nombre || h.lote === loteId);
+  }, [healths, loteInfo, loteId]);
+
+  // General health dialog (create registro not tied to a specific pollo)
+  const [isGeneralHealthDialogOpen, setIsGeneralHealthDialogOpen] = useState(false);
+  const [generalHealthForm, setGeneralHealthForm] = useState({
+    polloIdentificador: "",
+    lote: loteInfo ? loteInfo.id : loteId || "",
+    tipoRegistro: RecordType.REVISION as RecordType,
+    sintomas: [] as string[],
+    diagnostico: "",
+    tratamiento: "",
+    medicamento: "",
+    dosis: "",
+    veterinario: "",
+    proximaRevision: "",
+    observaciones: "",
+  });
+
+  const resetGeneralForm = () => {
+    setGeneralHealthForm({
+      polloIdentificador: "",
+      lote: loteInfo ? loteInfo.id : loteId || "",
+      tipoRegistro: RecordType.REVISION,
+      sintomas: [],
+      diagnostico: "",
+      tratamiento: "",
+      medicamento: "",
+      dosis: "",
+      veterinario: "",
+      proximaRevision: "",
+      observaciones: "",
+    });
+  };
+
+  const handleGeneralHealthSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await addHealth({
+        polloId: generalHealthForm.polloIdentificador || "auto",
+        polloIdentificador: generalHealthForm.polloIdentificador || "",
+        lote: generalHealthForm.lote,
+        fecha: new Date().toISOString(),
+        tipoRegistro: generalHealthForm.tipoRegistro,
+        sintomas: generalHealthForm.sintomas,
+        diagnostico: generalHealthForm.diagnostico,
+        tratamiento: generalHealthForm.tratamiento,
+        medicamento: generalHealthForm.medicamento,
+        dosis: generalHealthForm.dosis,
+        veterinario: generalHealthForm.veterinario,
+        proximaRevision: generalHealthForm.proximaRevision,
+        observaciones: generalHealthForm.observaciones,
+      });
+      toast({ title: "Registro creado", description: "Registro de salud agregado" });
+      setIsGeneralHealthDialogOpen(false);
+      resetGeneralForm();
+      await fetchHealths();
+    } catch (error) {
+      toast({ title: "Error", description: "No se pudo crear el registro", variant: "destructive" });
+    }
+  };
+
+  // Stats and chart data for this lote
+  const estadisticasResumenLote = useMemo(() => {
+    const totalRegistros = healthsForLote.length;
+    const enfermedadesActivas = healthsForLote.filter((r) => r.tipoRegistro === RecordType.SICK).length;
+    const tratamientosEnCurso = healthsForLote.filter((r) => r.proximaRevision && new Date(r.proximaRevision) > new Date()).length;
+    const vacunacionesRecientes = healthsForLote.filter((r) => r.tipoRegistro === RecordType.VACCINATION && new Date(r.fecha) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length;
+    return { totalRegistros, enfermedadesActivas, tratamientosEnCurso, vacunacionesRecientes };
+  }, [healthsForLote]);
+
+  const chartDataByTipo = useMemo(() => [
+    { tipo: "Revisiones", cantidad: healthsForLote.filter((r) => r.tipoRegistro === RecordType.REVISION).length },
+    { tipo: "Enfermedades", cantidad: healthsForLote.filter((r) => r.tipoRegistro === RecordType.SICK).length },
+    { tipo: "Tratamientos", cantidad: healthsForLote.filter((r) => r.tipoRegistro === RecordType.TREATMENT).length },
+    { tipo: "Vacunaciones", cantidad: healthsForLote.filter((r) => r.tipoRegistro === RecordType.VACCINATION).length },
+  ], [healthsForLote]);
+
+  const chartDataByDate = useMemo(() => {
+    const days: Record<string, { fecha: string; registros: number }> = {};
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().split("T")[0];
+      days[key] = { fecha: key, registros: 0 };
+    }
+    healthsForLote.forEach((h) => {
+      const key = new Date(h.fecha).toISOString().split("T")[0];
+      if (days[key]) days[key].registros += 1;
+    });
+    return Object.values(days);
+  }, [healthsForLote]);
+
   if (loadingPollos)
     return (
       <div className="flex justify-center items-center h-screen text-muted-foreground">
@@ -399,7 +510,7 @@ const LoteDetail = () => {
         </Card>
       </div>
 
-      <div className="grid gap-4">
+  <div className="grid gap-4">
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Filtros</CardTitle>
@@ -879,6 +990,201 @@ const LoteDetail = () => {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Salud: Registros, Estadísticas y Alertas (específico por lote) */}
+      <Tabs value="registros">
+        <TabsList className="flex flex-row md:grid md:grid-cols-3 justify-around overflow-x-auto">
+          <TabsTrigger value="registros">Registros Médicos</TabsTrigger>
+          <TabsTrigger value="estadisticas">Estadísticas</TabsTrigger>
+          <TabsTrigger value="alertas">Alertas de Salud</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="registros" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Registros Médicos de {loteInfo?.nombre || 'Lote'}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-end mb-2">
+                <Dialog open={isGeneralHealthDialogOpen} onOpenChange={setIsGeneralHealthDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      Nuevo Registro
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Crear Registro de Salud</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleGeneralHealthSubmit} className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="polloIdentificador">Identificador del Pollo</Label>
+                          <Input id="polloIdentificador" value={generalHealthForm.polloIdentificador} onChange={(e) => setGeneralHealthForm({ ...generalHealthForm, polloIdentificador: e.target.value })} placeholder="A001, B002" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="lote">Lote</Label>
+                          <Select value={generalHealthForm.lote} onValueChange={(v) => setGeneralHealthForm({ ...generalHealthForm, lote: v })}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {lotesData.map((l) => (
+                                <SelectItem key={l.id} value={l.id}>{l.nombre}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="tipoRegistro">Tipo de Registro</Label>
+                          <Select value={generalHealthForm.tipoRegistro} onValueChange={(v) => setGeneralHealthForm({ ...generalHealthForm, tipoRegistro: v as RecordType })}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value={RecordType.REVISION}>Revisión Rutinaria</SelectItem>
+                              <SelectItem value={RecordType.SICK}>Enfermedad</SelectItem>
+                              <SelectItem value={RecordType.TREATMENT}>Tratamiento</SelectItem>
+                              <SelectItem value={RecordType.VACCINATION}>Vacunación</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="veterinario">Veterinario</Label>
+                          <Input id="veterinario" value={generalHealthForm.veterinario} onChange={(e) => setGeneralHealthForm({ ...generalHealthForm, veterinario: e.target.value })} />
+                        </div>
+                      </div>
+
+                      {generalHealthForm.tipoRegistro === RecordType.SICK && (
+                        <div className="space-y-2">
+                          <Label>Síntomas Observados</Label>
+                          <div className="grid grid-cols-2 gap-2">
+                            {sintomasComunes.map((sintoma) => (
+                              <div key={sintoma} className="flex items-center space-x-2">
+                                <input type="checkbox" id={sintoma} checked={generalHealthForm.sintomas.includes(sintoma)} onChange={() => setGeneralHealthForm((prev) => ({ ...prev, sintomas: prev.sintomas.includes(sintoma) ? prev.sintomas.filter(s => s !== sintoma) : [...prev.sintomas, sintoma] }))} className="w-4 h-4" />
+                                <Label htmlFor={sintoma} className="text-sm">{sintoma}</Label>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <Label htmlFor="diagnostico">Diagnóstico</Label>
+                        <Input id="diagnostico" value={generalHealthForm.diagnostico} onChange={(e) => setGeneralHealthForm({ ...generalHealthForm, diagnostico: e.target.value })} required />
+                      </div>
+
+                      <div className="flex gap-2 justify-end">
+                        <Button type="button" variant="outline" onClick={() => setIsGeneralHealthDialogOpen(false)}>Cancelar</Button>
+                        <Button type="submit">Guardar Registro</Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Fecha</TableHead>
+                      <TableHead>Pollo</TableHead>
+                      <TableHead>Lote</TableHead>
+                      <TableHead>Tipo</TableHead>
+                      <TableHead>Diagnóstico</TableHead>
+                      <TableHead>Veterinario</TableHead>
+                      <TableHead>Próxima Revisión</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {healthsForLote.map((registro) => {
+                      return (
+                        <TableRow key={registro.id}>
+                          <TableCell>{new Date(registro.fecha).toLocaleDateString()}</TableCell>
+                          <TableCell className="font-medium">{registro.polloIdentificador}</TableCell>
+                          <TableCell>{registro.lote}</TableCell>
+                          <TableCell>{registro.tipoRegistro}</TableCell>
+                          <TableCell>{registro.diagnostico}</TableCell>
+                          <TableCell>{registro.veterinario}</TableCell>
+                          <TableCell>{registro.proximaRevision ? new Date(registro.proximaRevision).toLocaleDateString() : '-'}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="estadisticas" className="space-y-4">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Tendencia de Salud (Última Semana) - {loteInfo?.nombre || 'Lote'}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={chartDataByDate}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                      <XAxis dataKey="fecha" className="text-muted-foreground" fontSize={12} tickFormatter={(value) => new Date(value).toLocaleDateString()} />
+                      <YAxis className="text-muted-foreground" fontSize={12} />
+                      <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 'var(--radius)' }} />
+                      <Line type="monotone" dataKey="registros" stroke="hsl(var(--primary))" strokeWidth={2} name="Registros" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Distribución de Registros por Tipo</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartDataByTipo}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                      <XAxis dataKey="tipo" className="text-muted-foreground" fontSize={12} />
+                      <YAxis className="text-muted-foreground" fontSize={12} />
+                      <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 'var(--radius)' }} />
+                      <Bar dataKey="cantidad" fill="hsl(var(--primary))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="alertas" className="space-y-4">
+          <div className="grid gap-4">
+            <Card className="border-destructive/50 bg-destructive/5">
+              <CardHeader>
+                <CardTitle className="text-destructive flex items-center gap-2"><AlertTriangle className="h-5 w-5" />Alerta Crítica de Salud</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm"><strong>Incremento en enfermedades respiratorias</strong> - Se ha detectado un aumento de casos en este lote en los últimos días. Revisar protocolos.</p>
+                <div className="mt-4"><Button variant="destructive" size="sm">Atender Alerta</Button></div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-warning/50 bg-warning/5">
+              <CardHeader>
+                <CardTitle className="text-warning flex items-center gap-2"><Calendar className="h-5 w-5" />Recordatorio de Vacunación</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm"><strong>Vacunación programada</strong> - Revisa el calendario sanitario para este lote.</p>
+                <div className="mt-4"><Button variant="outline" size="sm">Programar Vacunación</Button></div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
