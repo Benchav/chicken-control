@@ -165,7 +165,7 @@ const LoteDetail = () => {
       await addHealth({
         polloId: selectedPolloForHealth.id,
         polloIdentificador: selectedPolloForHealth.identificador,
-        lote: selectedPolloForHealth.lote,
+        lote: loteInfo ? loteInfo.nombre : selectedPolloForHealth.lote,
         fecha: new Date().toISOString(),
         tipoRegistro: healthForm.tipoRegistro,
         sintomas: [],
@@ -200,7 +200,7 @@ const LoteDetail = () => {
   const resetForm = () => {
     setFormData({
       identificador: "",
-      lote: loteId || "",
+      lote: getLoteNameById(loteId || "") || loteId || "",
       raza: "",
       fechaNacimiento: "",
       pesoActual: "",
@@ -216,7 +216,7 @@ const LoteDetail = () => {
       if (editingPollo) {
         await updatePollo(editingPollo.id, {
           identificador: formData.identificador,
-          lote: formData.lote,
+          lote: loteInfo ? loteInfo.nombre : formData.lote,
           raza: formData.raza,
           fechaNacimiento: formData.fechaNacimiento,
           pesoActual: parseFloat(formData.pesoActual),
@@ -231,7 +231,7 @@ const LoteDetail = () => {
       } else {
         await createPollo({
           identificador: formData.identificador,
-          lote: formData.lote,
+          lote: loteInfo ? loteInfo.nombre : formData.lote,
           raza: formData.raza,
           fechaNacimiento: formData.fechaNacimiento,
           pesoActual: parseFloat(formData.pesoActual),
@@ -342,7 +342,7 @@ const LoteDetail = () => {
   const [isGeneralHealthDialogOpen, setIsGeneralHealthDialogOpen] = useState(false);
   const [generalHealthForm, setGeneralHealthForm] = useState({
     polloIdentificador: "",
-    lote: loteInfo ? loteInfo.id : loteId || "",
+    lote: loteInfo ? loteInfo.nombre : loteId || "",
     tipoRegistro: RecordType.REVISION as RecordType,
     sintomas: [] as string[],
     diagnostico: "",
@@ -360,7 +360,7 @@ const LoteDetail = () => {
   const resetGeneralForm = () => {
     setGeneralHealthForm({
       polloIdentificador: "",
-      lote: loteInfo ? loteInfo.id : loteId || "",
+      lote: loteInfo ? loteInfo.nombre : loteId || "",
       tipoRegistro: RecordType.REVISION,
       sintomas: [],
       diagnostico: "",
@@ -379,7 +379,7 @@ const LoteDetail = () => {
       await addHealth({
         polloId: generalHealthForm.polloIdentificador || "auto",
         polloIdentificador: generalHealthForm.polloIdentificador || "",
-        lote: loteInfo ? loteInfo.id : generalHealthForm.lote,
+        lote: loteInfo ? loteInfo.nombre : generalHealthForm.lote,
         fecha: new Date().toISOString(),
         tipoRegistro: generalHealthForm.tipoRegistro,
         sintomas: generalHealthForm.sintomas,
