@@ -31,6 +31,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Lote } from "@/models/lote.model"
 import { Status } from "@/models/status.model"
 import { useLoteContext } from "@/contexts/LoteContext"
+import { useNavigate } from "react-router-dom"
 
 export default function LotesPage() {
   const { lotes, addLote, updateLote, deleteLote, loadingLotes, errorLotes } =
@@ -38,12 +39,16 @@ export default function LotesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingLote, setEditingLote] = useState<Lote | null>(null)
   const { toast } = useToast()
-
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     nombre: "",
     cantidadInicial: "",
     fechaInicio: "",
     raza: "",
+    estado: Status.ACTIVE,
+    pesoPromedio: "",
+    mortalidad: "",
     observaciones: "",
   })
 
@@ -53,6 +58,9 @@ export default function LotesPage() {
       cantidadInicial: "",
       fechaInicio: "",
       raza: "",
+      estado: Status.ACTIVE,
+      pesoPromedio: "",
+      mortalidad: "",
       observaciones: "",
     })
     setEditingLote(null)
@@ -68,9 +76,9 @@ export default function LotesPage() {
       cantidadActual: parseInt(formData.cantidadInicial),
       fechaInicio: formData.fechaInicio,
       raza: formData.raza,
-      estado: Status.ACTIVE,
-      pesoPromedio: editingLote ? editingLote.pesoPromedio : 0,
-      mortalidad: editingLote ? editingLote.mortalidad : 0,
+      estado: formData.estado,
+      pesoPromedio: parseFloat(formData.pesoPromedio) || 0,
+      mortalidad: parseFloat(formData.mortalidad) || 0,
       observaciones: formData.observaciones,
     }
 
@@ -90,7 +98,7 @@ export default function LotesPage() {
       }
       setIsDialogOpen(false)
       resetForm()
-    } catch (err) {
+    } catch {
       toast({
         title: "Error",
         description: "No se pudo guardar el lote",
@@ -106,6 +114,9 @@ export default function LotesPage() {
       cantidadInicial: lote.cantidadInicial.toString(),
       fechaInicio: lote.fechaInicio,
       raza: lote.raza,
+      estado: lote.estado,
+      pesoPromedio: lote.pesoPromedio.toString(),
+      mortalidad: lote.mortalidad.toString(),
       observaciones: lote.observaciones,
     })
     setIsDialogOpen(true)
@@ -185,23 +196,21 @@ export default function LotesPage() {
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Nombre y cantidad */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="nombre">Nombre del Lote</Label>
+                  <Label>Nombre del Lote</Label>
                   <Input
-                    id="nombre"
                     value={formData.nombre}
                     onChange={(e) =>
                       setFormData({ ...formData, nombre: e.target.value })
                     }
-                    placeholder="Ej: Lote A - Mar 2024"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="cantidad">Cantidad Inicial</Label>
+                  <Label>Cantidad Inicial</Label>
                   <Input
-                    id="cantidad"
                     type="number"
                     value={formData.cantidadInicial}
                     onChange={(e) =>
@@ -210,17 +219,16 @@ export default function LotesPage() {
                         cantidadInicial: e.target.value,
                       })
                     }
-                    placeholder="1000"
                     required
                   />
                 </div>
               </div>
 
+              {/* Fecha y raza */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="fecha">Fecha de Inicio</Label>
+                  <Label>Fecha de Inicio</Label>
                   <Input
-                    id="fecha"
                     type="date"
                     value={formData.fechaInicio}
                     onChange={(e) =>
@@ -230,7 +238,7 @@ export default function LotesPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="raza">Raza</Label>
+                  <Label>Raza</Label>
                   <Select
                     value={formData.raza}
                     onValueChange={(value) =>
@@ -252,15 +260,60 @@ export default function LotesPage() {
                 </div>
               </div>
 
+              {/* Estado, Peso y Mortalidad */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label>Estado</Label>
+                  <Select
+                    value={formData.estado}
+                    onValueChange={(v) =>
+                      setFormData({ ...formData, estado: v as Status })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={Status.ACTIVE}>Activo</SelectItem>
+                      <SelectItem value={Status.DONE}>Completado</SelectItem>
+                      <SelectItem value={Status.SUSPENDED}>Suspendido</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Peso Promedio (kg)</Label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    value={formData.pesoPromedio}
+                    onChange={(e) =>
+                      setFormData({ ...formData, pesoPromedio: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Mortalidad (%)</Label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    value={formData.mortalidad}
+                    onChange={(e) =>
+                      setFormData({ ...formData, mortalidad: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Observaciones */}
               <div className="space-y-2">
-                <Label htmlFor="observaciones">Observaciones</Label>
+                <Label>Observaciones</Label>
                 <Textarea
-                  id="observaciones"
                   value={formData.observaciones}
                   onChange={(e) =>
                     setFormData({ ...formData, observaciones: e.target.value })
                   }
-                  placeholder="Notas adicionales sobre el lote..."
                   rows={3}
                 />
               </div>
@@ -358,7 +411,7 @@ export default function LotesPage() {
                 <CardTitle className="text-lg font-semibold">
                   {lote.nombre}
                 </CardTitle>
-                <Badge variant={getEstadoBadge(lote.estado) as any}>
+                <Badge onClick={()=>(navigate("/lotesDetail", { replace: true }))} variant={getEstadoBadge(lote.estado) as any}>
                   {lote.estado}
                 </Badge>
               </div>
@@ -413,7 +466,7 @@ export default function LotesPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleEdit(lote)}
-                  className="flex-1 gap-1"
+                  className="flex-1 gap-1 bg-blue-500 text-white hover:bg-blue-800 hover:text-white"
                 >
                   <Edit className="h-3 w-3" />
                   Editar
@@ -422,7 +475,7 @@ export default function LotesPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleDelete(lote.id)}
-                  className="gap-1 text-destructive hover:text-destructive"
+                  className="gap-1 text-white hover:text-white bg-red-500 hover:bg-red-800"
                 >
                   <Trash2 className="h-3 w-3" />
                   Eliminar

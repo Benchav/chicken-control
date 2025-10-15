@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import Dashboard from "./pages/Dashboard";
-import LotesPage from "./pages/lote/LotesPage";
+import LotesPage from "./pages/LotesPage";
 import PollosPage from "./pages/PollosPage";
 import SaludPage from "./pages/SaludPage";
 import AlertasPage from "./pages/AlertasPage";
@@ -16,6 +16,7 @@ import { PolloProvider } from "./contexts/ChickenContext";
 import { LoteProvider } from "./contexts/LoteContext";
 import { HealthProvider } from "./contexts/HealthContext";
 import { AlertProvider } from "./contexts/AlertContext";
+import LoteDetail from "./pages/LoteDetail";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
                         <Routes>
                           <Route path="/" element={<Dashboard />} />
                           <Route path="/lotes" element={<LotesPage />} />
+                          <Route path="/lotesDetail" element={<LoteDetail />} />
                           <Route path="/pollos" element={<PollosPage />} />
                           <Route path="/salud" element={<SaludPage />} />
                           <Route path="/alertas" element={<AlertasPage />} />
