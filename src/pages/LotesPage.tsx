@@ -411,7 +411,7 @@ export default function LotesPage() {
                 <CardTitle className="text-lg font-semibold cursor-pointer" onClick={() => navigate(`/lotes/${lote.id}`)}>
                   {lote.nombre}
                 </CardTitle>
-                <Badge onClick={() => navigate(`/lotes/${lote.nombre}`)} variant={getEstadoBadge(lote.estado) as any}>
+                <Badge onClick={() => navigate(`/lotes/${lote.id}`)} variant={getEstadoBadge(lote.estado) as any}>
                   {lote.estado}
                 </Badge>
               </div>

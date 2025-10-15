@@ -22,17 +22,20 @@ import { useLoteContext } from "@/contexts/LoteContext";
 import { useToast } from "@/hooks/use-toast";
 import { Health } from "@/models/health.model";
 import { Pollo } from "@/models/pollo.model";
-import { AlertTriangle, Heart, Plus, Skull, Edit, Trash2, Stethoscope } from "lucide-react";
+import {
+  AlertTriangle,
+  Heart,
+  Plus,
+  Skull,
+  Edit,
+  Trash2,
+  Stethoscope,
+} from "lucide-react";
 import { useHealthContext } from "@/contexts/HealthContext";
 import { RecordType } from "@/models/recordType.model";
 import { RegistroSalud } from "@/models/healthRegister.model";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -57,7 +60,8 @@ const LoteDetail = () => {
   const { lotes: lotesData } = useLoteContext();
   const { toast } = useToast();
 
-  const { healths, loadingHealths, errorHealths, fetchHealths, addHealth } = useHealthContext();
+  const { healths, loadingHealths, errorHealths, fetchHealths, addHealth } =
+    useHealthContext();
 
   const [filteredPollos, setFilteredPollos] = useState<Pollo[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -76,7 +80,8 @@ const LoteDetail = () => {
 
   // Health record UI state
   const [isHealthDialogOpen, setIsHealthDialogOpen] = useState(false);
-  const [selectedPolloForHealth, setSelectedPolloForHealth] = useState<Pollo | null>(null);
+  const [selectedPolloForHealth, setSelectedPolloForHealth] =
+    useState<Pollo | null>(null);
   const [healthForm, setHealthForm] = useState({
     tipoRegistro: RecordType.REVISION as RecordType,
     diagnostico: "",
@@ -96,7 +101,10 @@ const LoteDetail = () => {
 
   useEffect(() => {
     let list = pollos;
-    if (loteId) list = list.filter((p) => p.lote === loteId || p.lote === getLoteNameById(loteId));
+    if (loteId)
+      list = list.filter(
+        (p) => p.lote === loteId || p.lote === getLoteNameById(loteId)
+      );
     if (searchTerm) {
       list = list.filter(
         (p) =>
@@ -104,7 +112,8 @@ const LoteDetail = () => {
           p.lote.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    if (selectedEstado !== "Todos") list = list.filter((p) => p.estado === selectedEstado);
+    if (selectedEstado !== "Todos")
+      list = list.filter((p) => p.estado === selectedEstado);
     setFilteredPollos(list);
   }, [pollos, loteId, searchTerm, selectedEstado, lotesData]);
 
@@ -153,17 +162,24 @@ const LoteDetail = () => {
         proximaRevision: healthForm.proximaRevision,
         observaciones: healthForm.observaciones,
       });
-      toast({ title: "Registro creado", description: "Registro de salud agregado" });
+      toast({
+        title: "Registro creado",
+        description: "Registro de salud agregado",
+      });
       setIsHealthDialogOpen(false);
       await fetchHealths();
     } catch (error) {
-      toast({ title: "Error", description: "No se pudo crear el registro", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "No se pudo crear el registro",
+        variant: "destructive",
+      });
     }
   };
 
   const getLoteNameById = (id: string) => {
     const lote = lotesData.find((l) => l.id === id);
-    return lote ? lote.id : id;
+    return lote ? lote.nombre : id;
   };
 
   const resetForm = () => {
@@ -193,7 +209,10 @@ const LoteDetail = () => {
           observaciones: formData.observaciones,
           ultimaRevision: new Date().toISOString().split("T")[0],
         });
-        toast({ title: "Pollo actualizado", description: "Datos actualizados exitosamente" });
+        toast({
+          title: "Pollo actualizado",
+          description: "Datos actualizados exitosamente",
+        });
       } else {
         await createPollo({
           identificador: formData.identificador,
@@ -205,13 +224,20 @@ const LoteDetail = () => {
           observaciones: formData.observaciones,
           ultimaRevision: new Date().toISOString().split("T")[0],
         });
-        toast({ title: "Pollo registrado", description: "Nuevo pollo agregado" });
+        toast({
+          title: "Pollo registrado",
+          description: "Nuevo pollo agregado",
+        });
       }
       setIsDialogOpen(false);
       resetForm();
       await fetchPollos();
     } catch (error) {
-      toast({ title: "Error", description: "Ocurrió un error al guardar", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Ocurrió un error al guardar",
+        variant: "destructive",
+      });
     }
   };
 
@@ -231,7 +257,11 @@ const LoteDetail = () => {
 
   const handleDelete = async (id: string) => {
     await deletePollo(id);
-    toast({ title: "Pollo eliminado", description: "Registro eliminado", variant: "destructive" });
+    toast({
+      title: "Pollo eliminado",
+      description: "Registro eliminado",
+      variant: "destructive",
+    });
     await fetchPollos();
   };
 
@@ -241,15 +271,26 @@ const LoteDetail = () => {
       ultimaRevision: new Date().toISOString().split("T")[0],
       ...(newStatus === "muerto" ? { pesoActual: 0 } : {}),
     });
-    toast({ title: "Estado actualizado", description: `Pollo marcado como ${newStatus}` });
+    toast({
+      title: "Estado actualizado",
+      description: `Pollo marcado como ${newStatus}`,
+    });
     await fetchPollos();
   };
 
   const getEstadoBadge = (estado: string) => {
     const config = {
-      sano: { variant: "default" as const, icon: Heart, color: "text-success" },
-      enfermo: { variant: "secondary" as const, icon: AlertTriangle, color: "text-warning" },
-      muerto: { variant: "destructive" as const, icon: Skull, color: "text-destructive" },
+      sano: { variant: "default" as const, icon: Heart, color: "text-white" },
+      enfermo: {
+        variant: "secondary" as const,
+        icon: AlertTriangle,
+        color: "text-warning",
+      },
+      muerto: {
+        variant: "destructive" as const,
+        icon: Skull,
+        color: "text-white",
+      },
     };
     return config[estado as keyof typeof config] || config.sano;
   };
@@ -263,25 +304,56 @@ const LoteDetail = () => {
 
   const loteInfo = loteId ? lotesData.find((l) => l.id === loteId) : null;
 
+  // calcular sanos a partir del total del lote menos enfermos y muertos
+  const enfermosCount = filteredPollos.filter(
+    (p) => p.estado === "enfermo"
+  ).length;
+  const muertosCount = filteredPollos.filter(
+    (p) => p.estado === "muerto"
+  ).length;
+  const loteTotal =
+    loteInfo?.cantidadActual ??
+    loteInfo?.cantidadInicial ??
+    filteredPollos.length;
+  const sanosCount = Math.max(0, loteTotal - enfermosCount - muertosCount);
+
   if (loadingPollos)
     return (
-      <div className="flex justify-center items-center h-screen text-muted-foreground">Cargando pollos...</div>
+      <div className="flex justify-center items-center h-screen text-muted-foreground">
+        Cargando pollos...
+      </div>
     );
 
   if (errorPollos)
     return (
-      <div className="flex justify-center items-center h-screen text-destructive">{errorPollos}</div>
+      <div className="flex justify-center items-center h-screen text-destructive">
+        {errorPollos}
+      </div>
     );
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">{loteInfo ? loteInfo.nombre : "Lote"}</h1>
-          {loteInfo && <p className="text-sm text-muted-foreground">Raza: {loteInfo.raza} • Iniciado: {new Date(loteInfo.fechaInicio).toLocaleDateString()}</p>}
+          <h1 className="text-2xl font-bold">
+            {loteInfo ? loteInfo.nombre : "Lote"}
+          </h1>
+          {loteInfo && (
+            <p className="text-sm text-muted-foreground">
+              Raza: {loteInfo.raza} • Iniciado:{" "}
+              {new Date(loteInfo.fechaInicio).toLocaleDateString()}
+            </p>
+          )}
         </div>
         <div>
-          <Button className="bg-green-500 text-white" variant="ghost" size="sm" onClick={() => navigate(-1)}>Volver</Button>
+          <Button
+            className="bg-green-500 text-white"
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+          >
+            Volver
+          </Button>
         </div>
       </div>
 
@@ -300,7 +372,7 @@ const LoteDetail = () => {
             <CardTitle className="text-sm font-medium">Sanos</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">{filteredPollos.filter((p) => p.estado === "sano").length}</div>
+            <div className="text-2xl font-bold text-success">{sanosCount}</div>
           </CardContent>
         </Card>
 
@@ -309,7 +381,9 @@ const LoteDetail = () => {
             <CardTitle className="text-sm font-medium">Enfermos</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-warning">{filteredPollos.filter((p) => p.estado === "enfermo").length}</div>
+            <div className="text-2xl font-bold text-warning">
+              {filteredPollos.filter((p) => p.estado === "enfermo").length}
+            </div>
           </CardContent>
         </Card>
 
@@ -318,7 +392,9 @@ const LoteDetail = () => {
             <CardTitle className="text-sm font-medium">Muertos</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-destructive">{filteredPollos.filter((p) => p.estado === "muerto").length}</div>
+            <div className="text-2xl font-bold text-destructive">
+              {filteredPollos.filter((p) => p.estado === "muerto").length}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -342,7 +418,10 @@ const LoteDetail = () => {
               </div>
 
               <div className="sm:w-32">
-                <Select value={selectedEstado} onValueChange={setSelectedEstado}>
+                <Select
+                  value={selectedEstado}
+                  onValueChange={setSelectedEstado}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -360,7 +439,9 @@ const LoteDetail = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Lista de Pollos ({filteredPollos.length})</CardTitle>
+            <CardTitle className="text-lg">
+              Lista de Pollos ({filteredPollos.length})
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
@@ -385,49 +466,121 @@ const LoteDetail = () => {
 
                     return (
                       <TableRow key={pollo.id}>
-                        <TableCell className="font-medium">{pollo.identificador}</TableCell>
+                        <TableCell className="font-medium">
+                          {pollo.identificador}
+                        </TableCell>
                         <TableCell>{pollo.lote}</TableCell>
                         <TableCell>{pollo.raza}</TableCell>
-                        <TableCell>{getEdadEnSemanas(pollo.fechaNacimiento)} sem</TableCell>
-                        <TableCell>{pollo.estado === "muerto" ? "-" : `${pollo.pesoActual}kg`}</TableCell>
                         <TableCell>
-                          <Button size="sm" variant="ghost" className="p-0">
-                            <IconComponent className="h-4 w-4 inline-block mr-1" />
-                            <span className="align-middle">{pollo.estado}</span>
-                          </Button>
+                          {getEdadEnSemanas(pollo.fechaNacimiento)} sem
                         </TableCell>
-                          <TableCell>{new Date(pollo.ultimaRevision).toLocaleDateString()}</TableCell>
-                          <TableCell>
-                            {(() => {
-                              const latest = latestHealthByPollo[pollo.id] || latestHealthByPollo[pollo.identificador];
-                              return latest ? new Date(latest.fecha).toLocaleDateString() : "-";
-                            })()}
-                          </TableCell>
-                          <TableCell>
-                            {(() => {
-                              const latest = latestHealthByPollo[pollo.id] || latestHealthByPollo[pollo.identificador];
-                              return latest ? latest.diagnostico || latest.tipoRegistro : "-";
-                            })()}
-                          </TableCell>
                         <TableCell>
-                            <div className="flex gap-1 items-center">
-                            <Button variant="outline" size="sm" onClick={() => handleEdit(pollo)} className="h-7 w-7 p-0">
+                          {pollo.estado === "muerto"
+                            ? "-"
+                            : `${pollo.pesoActual}kg`}
+                        </TableCell>
+                        <TableCell>
+                          {(() => {
+                            const {
+                              variant,
+                              icon: Icon,
+                              color,
+                            } = getEstadoBadge(pollo.estado);
+                            return (
+                              <Button
+                                size="sm"
+                                variant={variant}
+                                className={`p-0 px-2 flex items-center gap-1 ${color}`}
+                              >
+                                <Icon className="h-4 w-4" />
+                                <span className="capitalize">
+                                  {pollo.estado}
+                                </span>
+                              </Button>
+                            );
+                          })()}
+                        </TableCell>
+
+                        <TableCell>
+                          {new Date(pollo.ultimaRevision).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          {(() => {
+                            const latest =
+                              latestHealthByPollo[pollo.id] ||
+                              latestHealthByPollo[pollo.identificador];
+                            return latest
+                              ? new Date(latest.fecha).toLocaleDateString()
+                              : "-";
+                          })()}
+                        </TableCell>
+                        <TableCell>
+                          {(() => {
+                            const latest =
+                              latestHealthByPollo[pollo.id] ||
+                              latestHealthByPollo[pollo.identificador];
+                            return latest
+                              ? latest.diagnostico || latest.tipoRegistro
+                              : "-";
+                          })()}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-1 items-center">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEdit(pollo)}
+                              className="h-7 w-7 p-0"
+                            >
                               <Edit className="h-3 w-3" />
                             </Button>
-                              <Button variant="outline" size="sm" onClick={() => openHealthDialog(pollo)} className="h-7 w-7 p-0" title="Nuevo registro de salud">
-                                <Stethoscope className="h-3 w-3" />
-                              </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => openHealthDialog(pollo)}
+                              className="h-7 w-7 p-0"
+                              title="Nuevo registro de salud"
+                            >
+                              <Stethoscope className="h-3 w-3" />
+                            </Button>
                             {pollo.estado === "sano" && (
                               <>
-                                <Button variant="outline" size="sm" onClick={() => handleQuickStatusChange(pollo.id, "enfermo" as Health)} className="h-7 px-2 text-warning hover:text-warning" title="Marcar como enfermo">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleQuickStatusChange(
+                                      pollo.id,
+                                      "enfermo" as Health
+                                    )
+                                  }
+                                  className="h-7 px-2 text-warning hover:text-warning"
+                                  title="Marcar como enfermo"
+                                >
                                   <AlertTriangle className="h-3 w-3" />
                                 </Button>
-                                <Button variant="outline" size="sm" onClick={() => handleQuickStatusChange(pollo.id, "muerto" as Health)} className="h-7 px-2 text-destructive hover:text-destructive" title="Marcar como muerto">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleQuickStatusChange(
+                                      pollo.id,
+                                      "muerto" as Health
+                                    )
+                                  }
+                                  className="h-7 px-2 text-destructive hover:text-destructive"
+                                  title="Marcar como muerto"
+                                >
                                   <Skull className="h-3 w-3" />
                                 </Button>
                               </>
                             )}
-                            <Button variant="outline" size="sm" onClick={() => handleDelete(pollo.id)} className="h-7 w-7 p-0 text-destructive hover:text-destructive">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDelete(pollo.id)}
+                              className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                            >
                               <Trash2 className="h-3 w-3" />
                             </Button>
                           </div>
@@ -451,7 +604,9 @@ const LoteDetail = () => {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle>{editingPollo ? "Editar Pollo" : "Registrar Nuevo Pollo"}</DialogTitle>
+              <DialogTitle>
+                {editingPollo ? "Editar Pollo" : "Registrar Nuevo Pollo"}
+              </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -460,7 +615,12 @@ const LoteDetail = () => {
                   <Input
                     id="identificador"
                     value={formData.identificador}
-                    onChange={(e) => setFormData({ ...formData, identificador: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        identificador: e.target.value,
+                      })
+                    }
                     placeholder="A001, B002, etc."
                     required
                   />
@@ -468,9 +628,17 @@ const LoteDetail = () => {
                 <div className="space-y-2">
                   <Label htmlFor="lote">Lote</Label>
                   {loteId ? (
-                    <Input value={loteInfo ? loteInfo.nombre : loteId} readOnly />
+                    <Input
+                      value={loteInfo ? loteInfo.nombre : loteId}
+                      readOnly
+                    />
                   ) : (
-                    <Select value={formData.lote} onValueChange={(value) => setFormData({ ...formData, lote: value })}>
+                    <Select
+                      value={formData.lote}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, lote: value })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccionar lote" />
                       </SelectTrigger>
@@ -489,31 +657,64 @@ const LoteDetail = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="raza">Raza</Label>
-                  <Select value={formData.raza} onValueChange={(value) => setFormData({ ...formData, raza: value })}>
+                  <Select
+                    value={formData.raza}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, raza: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Seleccionar raza" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Ross 308">Ross 308</SelectItem>
                       <SelectItem value="Cobb 500">Cobb 500</SelectItem>
-                      <SelectItem value="Hubbard Classic">Hubbard Classic</SelectItem>
+                      <SelectItem value="Hubbard Classic">
+                        Hubbard Classic
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="fechaNacimiento">Fecha de Nacimiento</Label>
-                  <Input id="fechaNacimiento" type="date" value={formData.fechaNacimiento} onChange={(e) => setFormData({ ...formData, fechaNacimiento: e.target.value })} required />
+                  <Input
+                    id="fechaNacimiento"
+                    type="date"
+                    value={formData.fechaNacimiento}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        fechaNacimiento: e.target.value,
+                      })
+                    }
+                    required
+                  />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="pesoActual">Peso Actual (kg)</Label>
-                  <Input id="pesoActual" type="number" step="0.01" value={formData.pesoActual} onChange={(e) => setFormData({ ...formData, pesoActual: e.target.value })} placeholder="1.25" required />
+                  <Input
+                    id="pesoActual"
+                    type="number"
+                    step="0.01"
+                    value={formData.pesoActual}
+                    onChange={(e) =>
+                      setFormData({ ...formData, pesoActual: e.target.value })
+                    }
+                    placeholder="1.25"
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="estado">Estado</Label>
-                  <Select value={formData.estado} onValueChange={(value) => setFormData({ ...formData, estado: value })}>
+                  <Select
+                    value={formData.estado}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, estado: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -528,12 +729,27 @@ const LoteDetail = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="observaciones">Observaciones</Label>
-                <Input id="observaciones" value={formData.observaciones} onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })} placeholder="Notas médicas, comportamiento, etc." />
+                <Input
+                  id="observaciones"
+                  value={formData.observaciones}
+                  onChange={(e) =>
+                    setFormData({ ...formData, observaciones: e.target.value })
+                  }
+                  placeholder="Notas médicas, comportamiento, etc."
+                />
               </div>
 
               <div className="flex gap-2 justify-end">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
-                <Button type="submit">{editingPollo ? "Actualizar" : "Registrar"} Pollo</Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit">
+                  {editingPollo ? "Actualizar" : "Registrar"} Pollo
+                </Button>
               </div>
             </form>
           </DialogContent>
@@ -542,49 +758,121 @@ const LoteDetail = () => {
         <Dialog open={isHealthDialogOpen} onOpenChange={setIsHealthDialogOpen}>
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle>Crear Registro de Salud - {selectedPolloForHealth?.identificador || ""}</DialogTitle>
+              <DialogTitle>
+                Crear Registro de Salud -{" "}
+                {selectedPolloForHealth?.identificador || ""}
+              </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleHealthSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="diagnostico">Diagnóstico</Label>
-                  <Textarea id="diagnostico" value={healthForm.diagnostico} onChange={(e) => setHealthForm({ ...healthForm, diagnostico: e.target.value })} required />
+                  <Textarea
+                    id="diagnostico"
+                    value={healthForm.diagnostico}
+                    onChange={(e) =>
+                      setHealthForm({
+                        ...healthForm,
+                        diagnostico: e.target.value,
+                      })
+                    }
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="veterinario">Veterinario</Label>
-                  <Input id="veterinario" value={healthForm.veterinario} onChange={(e) => setHealthForm({ ...healthForm, veterinario: e.target.value })} />
+                  <Input
+                    id="veterinario"
+                    value={healthForm.veterinario}
+                    onChange={(e) =>
+                      setHealthForm({
+                        ...healthForm,
+                        veterinario: e.target.value,
+                      })
+                    }
+                  />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="tratamiento">Tratamiento</Label>
-                  <Input id="tratamiento" value={healthForm.tratamiento} onChange={(e) => setHealthForm({ ...healthForm, tratamiento: e.target.value })} />
+                  <Input
+                    id="tratamiento"
+                    value={healthForm.tratamiento}
+                    onChange={(e) =>
+                      setHealthForm({
+                        ...healthForm,
+                        tratamiento: e.target.value,
+                      })
+                    }
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="medicamento">Medicamento</Label>
-                  <Input id="medicamento" value={healthForm.medicamento} onChange={(e) => setHealthForm({ ...healthForm, medicamento: e.target.value })} />
+                  <Input
+                    id="medicamento"
+                    value={healthForm.medicamento}
+                    onChange={(e) =>
+                      setHealthForm({
+                        ...healthForm,
+                        medicamento: e.target.value,
+                      })
+                    }
+                  />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="dosis">Dosis</Label>
-                  <Input id="dosis" value={healthForm.dosis} onChange={(e) => setHealthForm({ ...healthForm, dosis: e.target.value })} />
+                  <Input
+                    id="dosis"
+                    value={healthForm.dosis}
+                    onChange={(e) =>
+                      setHealthForm({ ...healthForm, dosis: e.target.value })
+                    }
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="proximaRevision">Próxima Revisión</Label>
-                  <Input id="proximaRevision" type="date" value={healthForm.proximaRevision} onChange={(e) => setHealthForm({ ...healthForm, proximaRevision: e.target.value })} />
+                  <Input
+                    id="proximaRevision"
+                    type="date"
+                    value={healthForm.proximaRevision}
+                    onChange={(e) =>
+                      setHealthForm({
+                        ...healthForm,
+                        proximaRevision: e.target.value,
+                      })
+                    }
+                  />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="observaciones">Observaciones</Label>
-                <Textarea id="observaciones" value={healthForm.observaciones} onChange={(e) => setHealthForm({ ...healthForm, observaciones: e.target.value })} rows={3} />
+                <Textarea
+                  id="observaciones"
+                  value={healthForm.observaciones}
+                  onChange={(e) =>
+                    setHealthForm({
+                      ...healthForm,
+                      observaciones: e.target.value,
+                    })
+                  }
+                  rows={3}
+                />
               </div>
 
               <div className="flex gap-2 justify-end">
-                <Button type="button" variant="outline" onClick={() => setIsHealthDialogOpen(false)}>Cancelar</Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsHealthDialogOpen(false)}
+                >
+                  Cancelar
+                </Button>
                 <Button type="submit">Guardar Registro</Button>
               </div>
             </form>
@@ -596,4 +884,3 @@ const LoteDetail = () => {
 };
 
 export default LoteDetail;
-
