@@ -408,10 +408,10 @@ export default function LotesPage() {
           <Card key={lote.id} className="transition-all hover:shadow-md">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold">
+                <CardTitle className="text-lg font-semibold cursor-pointer" onClick={() => navigate(`/lotes/${lote.id}`)}>
                   {lote.nombre}
                 </CardTitle>
-                <Badge onClick={()=>(navigate("/lotesDetail", { replace: true }))} variant={getEstadoBadge(lote.estado) as any}>
+                <Badge onClick={() => navigate(`/lotes/${lote.nombre}`)} variant={getEstadoBadge(lote.estado) as any}>
                   {lote.estado}
                 </Badge>
               </div>

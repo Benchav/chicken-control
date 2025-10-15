@@ -47,7 +47,10 @@ const App = () => (
                         <Routes>
                           <Route path="/" element={<Dashboard />} />
                           <Route path="/lotes" element={<LotesPage />} />
+                          {/* legacy route kept for compatibility */}
                           <Route path="/lotesDetail" element={<LoteDetail />} />
+                          {/* dynamic route: show lotes detail by id */}
+                          <Route path="/lotes/:id" element={<LoteDetail />} />
                           <Route path="/pollos" element={<PollosPage />} />
                           <Route path="/salud" element={<SaludPage />} />
                           <Route path="/alertas" element={<AlertasPage />} />
