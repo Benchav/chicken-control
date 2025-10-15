@@ -27,8 +27,8 @@ import { Button } from "@/components/ui/button";
 const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Lotes", url: "/lotes", icon: Users },
-  { title: "Pollos", url: "/pollos", icon: Bird },
-  { title: "Salud", url: "/salud", icon: Activity },
+  // { title: "Pollos", url: "/pollos", icon: Bird },
+  // { title: "Salud", url: "/salud", icon: Activity },
   { title: "Alertas", url: "/alertas", icon: AlertTriangle },
   { title: "Reportes", url: "/reportes", icon: FileText },
 ];
