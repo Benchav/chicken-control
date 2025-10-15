@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import Dashboard from "./pages/Dashboard";
-import LotesPage from "./pages/LotesPage";
+import LotesPage from "./pages/lote/LotesPage";
 import PollosPage from "./pages/PollosPage";
 import SaludPage from "./pages/SaludPage";
 import AlertasPage from "./pages/AlertasPage";
