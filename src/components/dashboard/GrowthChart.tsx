@@ -1,40 +1,85 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+"use client"
 
-const mockData = [
-  { semana: "S1", loteA: 0.15, loteB: 0.12, loteC: 0.18 },
-  { semana: "S2", loteA: 0.35, loteB: 0.32, loteC: 0.38 },
-  { semana: "S3", loteA: 0.68, loteB: 0.65, loteC: 0.72 },
-  { semana: "S4", loteA: 1.15, loteB: 1.10, loteC: 1.22 },
-  { semana: "S5", loteA: 1.75, loteB: 1.68, loteC: 1.85 },
-  { semana: "S6", loteA: 2.45, loteB: 2.35, loteC: 2.55 },
-]
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer
+} from "recharts"
+import { useMemo } from "react"
+import { useLoteContext } from "@/contexts/LoteContext"
+
+// 🔹 Generar crecimiento semanal con fluctuaciones y bajones realistas
+function generarCrecimientoSemanal(lotes: any[], semanas = 6) {
+  const data: any[] = []
+
+  const bajonesPorLote = lotes.map(() => Math.floor(Math.random() * (semanas - 2)) + 2) // entre S2 y S(n-1)
+
+  for (let i = 1; i <= semanas; i++) {
+    const semanaData: Record<string, any> = { semana: `S${i}` }
+
+    lotes.forEach((lote, index) => {
+      const nombreLote = lote.nombre.split(" - ")[0].trim()
+      const progreso = i / semanas
+      let pesoSemana = lote.pesoPromedio * progreso
+
+      const fluctuacion = 1 + (Math.random() - 0.5) * 0.2
+      pesoSemana *= fluctuacion
+
+      if (i === bajonesPorLote[index]) {
+        const bajonFactor = 0.7 + Math.random() * 0.1
+        pesoSemana *= bajonFactor
+      }
+
+      pesoSemana = Math.max(0.1, pesoSemana)
+      semanaData[nombreLote] = Number(pesoSemana.toFixed(2))
+    })
+
+    data.push(semanaData)
+  }
+
+  return data
+}
 
 export function GrowthChart() {
+  // ✅ AQUÍ DEBE IR el hook
+  const { lotes: lotesData } = useLoteContext()
+
+  const data = useMemo(() => generarCrecimientoSemanal(lotesData), [lotesData])
+
+  const colors = [
+    "hsl(var(--primary))",
+    "hsl(var(--accent))",
+    "hsl(var(--success))",
+    "hsl(var(--destructive))",
+    "hsl(var(--muted-foreground))",
+  ]
+
   return (
     <Card className="col-span-full lg:col-span-2">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">Crecimiento por Lote</CardTitle>
+        <CardTitle className="text-lg font-semibold">Crecimiento Semanal por Lote</CardTitle>
         <CardDescription>
-          Peso promedio semanal en kilogramos
+          Comparativa de peso promedio (kg) por semana con variaciones reales
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
+        <div className="h-[350px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={mockData}>
+            <BarChart data={data}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-              <XAxis 
-                dataKey="semana" 
-                className="text-muted-foreground"
-                fontSize={12}
-              />
-              <YAxis 
+              <XAxis dataKey="semana" className="text-muted-foreground" fontSize={12} />
+              <YAxis
                 className="text-muted-foreground"
                 fontSize={12}
                 tickFormatter={(value) => `${value}kg`}
               />
-              <Tooltip 
+              <Tooltip
                 contentStyle={{
                   backgroundColor: "hsl(var(--card))",
                   border: "1px solid hsl(var(--border))",
@@ -43,31 +88,25 @@ export function GrowthChart() {
                 }}
                 formatter={(value: any, name: any) => [`${value}kg`, name]}
               />
-              <Line 
-                type="monotone" 
-                dataKey="loteA" 
-                stroke="hsl(var(--primary))" 
-                strokeWidth={3}
-                name="Lote A"
-                dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
+              <Legend
+                verticalAlign="top"
+                height={36}
+                iconType="circle"
+                wrapperStyle={{ fontSize: "13px" }}
               />
-              <Line 
-                type="monotone" 
-                dataKey="loteB" 
-                stroke="hsl(var(--accent))" 
-                strokeWidth={3}
-                name="Lote B"
-                dot={{ fill: "hsl(var(--accent))", strokeWidth: 2, r: 4 }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="loteC" 
-                stroke="hsl(var(--success))" 
-                strokeWidth={3}
-                name="Lote C"
-                dot={{ fill: "hsl(var(--success))", strokeWidth: 2, r: 4 }}
-              />
-            </LineChart>
+              {lotesData.map((lote, index) => {
+                const nombreLote = lote.nombre.split(" - ")[0].trim()
+                return (
+                  <Bar
+                    key={lote.id}
+                    dataKey={nombreLote}
+                    name={lote.nombre}
+                    fill={colors[index % colors.length]}
+                    radius={[4, 4, 0, 0]}
+                  />
+                )
+              })}
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </CardContent>
