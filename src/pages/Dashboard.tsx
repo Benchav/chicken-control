@@ -1,21 +1,48 @@
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { AlertCard } from "@/components/dashboard/AlertCard";
 import { GrowthChart } from "@/components/dashboard/GrowthChart";
-import {
-  Bird,
-  Heart,
-  Skull,
-  AlertTriangle,
-} from "lucide-react";
+import { Bird, Heart, Skull, AlertTriangle } from "lucide-react";
 import farmHero from "@/assets/farm-hero.jpg";
 import { Status } from "@/models/status.model";
 import { useLoteContext } from "@/contexts/LoteContext";
 import { usePolloContext } from "@/contexts/ChickenContext";
 import { Health } from "@/models/health.model";
+import { useAlertContext } from "@/contexts/AlertContext";
+import { AlertPriority } from "@/models/alertPriority.model";
+import { AlertType } from "@/models/alertType.model";
+
+// ✅ Helper para mapear el tipo de alerta (por si viene como string o enum)
+const mapTipo = (
+  tipo: string | AlertType
+): "health" | "mortality" | "production" | "general" => {
+  const valor = tipo.toString().toLowerCase();
+  switch (valor) {
+    case "health":
+    case "salud":
+      return "health";
+    case "mortality":
+    case "mortalidad":
+      return "mortality";
+    case "production":
+    case "producción":
+      return "production";
+    default:
+      return "general";
+  }
+};
 
 export default function Dashboard() {
+  const { alerts } = useAlertContext();
   const { lotes, loadingLotes, errorLotes } = useLoteContext();
   const { pollos, loadingPollos, errorPollos } = usePolloContext();
+
+  const alertasRecientes = [...alerts]
+    .sort(
+      (a, b) =>
+        new Date(b.fechaCreacion).getTime() -
+        new Date(a.fechaCreacion).getTime()
+    )
+    .slice(0, 3);
 
   if (loadingLotes || loadingPollos) {
     return (
@@ -53,7 +80,7 @@ export default function Dashboard() {
       : 0;
 
   const pollosMuertos = totalInicial - totalPollos;
-  const pollosEnfermos = pollos.filter(p => p.estado === Health.SICK).length;
+  const pollosEnfermos = pollos.filter((p) => p.estado === Health.SICK).length;
   const pollosSanos = totalPollos - pollosEnfermos;
 
   return (
@@ -129,33 +156,32 @@ export default function Dashboard() {
               Alertas Recientes
             </h2>
             <div className="space-y-3">
-              <AlertCard
-                type="health"
-                title="Detección de enfermedad respiratoria"
-                description="15 pollos del Lote A muestran síntomas respiratorios. Se recomienda aislamiento y tratamiento inmediato."
-                severity="high"
-                timestamp="Hace 2 horas"
-                actionLabel="Ver detalles"
-                onAction={() => console.log("Ver detalles")}
-              />
-              <AlertCard
-                type="production"
-                title="Lote B listo para sacrificio"
-                description="El Lote B ha alcanzado el peso objetivo de 2.5kg. Programar procesamiento."
-                severity="medium"
-                timestamp="Hace 6 horas"
-                actionLabel="Programar"
-                onAction={() => console.log("Programar")}
-              />
-              <AlertCard
-                type="general"
-                title="Mantenimiento de equipos"
-                description="Revisión programada de sistemas de ventilación en el sector 2."
-                severity="low"
-                timestamp="Hace 1 día"
-                actionLabel="Agendar"
-                onAction={() => console.log("Agendar")}
-              />
+              {alertasRecientes.length > 0 ? (
+                alertasRecientes.map((alerta) => (
+                  <AlertCard
+                    key={alerta.id}
+                    type={mapTipo(alerta.tipo)}
+                    title={alerta.titulo}
+                    description={alerta.descripcion}
+                    severity={
+                      alerta.prioridad === AlertPriority.HIGH
+                        ? "high"
+                        : alerta.prioridad === AlertPriority.MEDIUM
+                        ? "medium"
+                        : "low"
+                    }
+                    timestamp={new Date(alerta.fechaCreacion).toLocaleString()}
+                    actionLabel="Ver detalles"
+                    onAction={() =>
+                      console.log(`Ver detalles de ${alerta.titulo}`)
+                    }
+                  />
+                ))
+              ) : (
+                <p className="text-muted-foreground text-sm">
+                  No hay alertas recientes.
+                </p>
+              )}
             </div>
           </div>
 
@@ -181,9 +207,7 @@ export default function Dashboard() {
                           : "text-warning"
                       }`}
                     >
-                      {lote.estado === Status.ACTIVE
-                        ? "Activo"
-                        : "Finalizado"}
+                      {lote.estado === Status.ACTIVE ? "Activo" : "Finalizado"}
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-4 text-sm">
