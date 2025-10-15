@@ -549,27 +549,37 @@ const LoteDetail = () => {
             </p>
           </CardContent>
         </Card>
-        {/* <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Sanos</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-success">{sanosCount}</div>
-          </CardContent>
-        </Card> */}
-
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Enfermos</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-warning">
               {enfermosCount}
             </div>
+            <p className="text-xs text-muted-foreground">
+              {((enfermosCount / totalConEstado) * 100).toFixed(1)}% del total
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Muertos</CardTitle>
+            <Skull className="h-4 w-4 text-destructive" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-destructive">
+              {muertosCount}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {((muertosCount / totalConEstado) * 100).toFixed(1)}%
+              mortalidad
+            </p>
           </CardContent>
         </Card>
 
-        <Card>
+        {/* <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Muertos</CardTitle>
           </CardHeader>
@@ -578,7 +588,7 @@ const LoteDetail = () => {
               {muertosCount}
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       <div className="grid gap-4">
