@@ -12,12 +12,20 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    try {
+      const raw = localStorage.getItem('user');
+      return raw ? (JSON.parse(raw) as User) : null;
+    } catch {
+      return null;
+    }
+  });
 
   const login = async (email: string, password: string) => {
     const found = userData.find((u) => u.email === email && u.password === password);
     if (found) {
       setUser(found);
+      try { localStorage.setItem('user', JSON.stringify(found)); } catch {}
       return true;
     }
     return false;
@@ -30,13 +38,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const newUser: User = { id: Math.random().toString(36).slice(2, 9), ...payload };
     userData.push(newUser);
     setUser(newUser);
+    try { localStorage.setItem('user', JSON.stringify(newUser)); } catch {}
     return true;
   };
 
   const logout = () => setUser(null);
 
+  // ensure logout clears localStorage
+  const _logout = () => {
+    try { localStorage.removeItem('user'); } catch {}
+    logout();
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, login, register, logout: _logout }}>
       {children}
     </AuthContext.Provider>
   );

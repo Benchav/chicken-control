@@ -8,7 +8,7 @@ import {
   FileText,
   Menu,
 } from "lucide-react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { useAuth } from '@/contexts/AuthContext';
 
 const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -99,6 +100,10 @@ export function AppSidebar() {
             </div>
           </SidebarHeader>
           <SidebarContentItems />
+          {/* logout button */}
+          <div className="p-4 border-t border-border">
+            <LogoutButton />
+          </div>
         </Sidebar>
       </div>
 
@@ -142,10 +147,24 @@ export function AppSidebar() {
                 </div>
               </SidebarHeader>
               <SidebarContentItems />
+              <div className="p-4 border-t border-border">
+                <LogoutButton />
+              </div>
             </Sidebar>
           </SheetContent>
         </Sheet>
       </div>
     </>
+  );
+}
+
+function LogoutButton() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  if (!user) return null;
+  return (
+    <Button variant="ghost" onClick={() => { logout(); navigate('/login'); }}>
+      Cerrar sesión
+    </Button>
   );
 }

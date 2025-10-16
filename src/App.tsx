@@ -24,66 +24,73 @@ import { Navigate } from 'react-router-dom';
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <SidebarProvider defaultOpen={true}>
-          <div className="min-h-screen flex flex-col md:flex-row w-full">
-            <div className="sticky top-0 self-start z-50">
-              <AppSidebar />
-            </div>
-            <div className="flex md:hidden h-[3.5rem]" />
-            <div className="flex-1 flex flex-col">
-              <header className="h-14 hidden md:flex items-center border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
-                <SidebarTrigger className="mr-4" />
-                <div className="flex items-center gap-2">
-                  <h1 className="font-semibold text-foreground">Avicon</h1>
-                </div>
-              </header>
-              <main className="flex-1 overflow-auto">
-                <AlertProvider>
-                  <HealthProvider>
-                    <LoteProvider>
-                      <PolloProvider>
-                        <AuthProvider>
-                          <Routes>
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/register" element={<Register />} />
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <SidebarProvider defaultOpen={true}>
+              <AppInner />
+            </SidebarProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
-                            {/* Protected routes */}
-                            <Route
-                              path="/"
-                              element={
-                                <RequireAuth>
-                                  <Dashboard />
-                                </RequireAuth>
-                              }
-                            />
-                            <Route path="/lotes" element={<RequireAuth><LotesPage /></RequireAuth>} />
-                            <Route path="/lotesDetail" element={<RequireAuth><LoteDetail /></RequireAuth>} />
-                            <Route path="/lotes/:id" element={<RequireAuth><LoteDetail /></RequireAuth>} />
-                            <Route path="/pollos" element={<RequireAuth><PollosPage /></RequireAuth>} />
-                            <Route path="/salud" element={<RequireAuth><SaludPage /></RequireAuth>} />
-                            <Route path="/alertas" element={<RequireAuth><AlertasPage /></RequireAuth>} />
-                            <Route path="/reportes" element={<RequireAuth><ReportesPage /></RequireAuth>} />
-                            <Route path="*" element={<RequireAuth><NotFound /></RequireAuth>} />
-                          </Routes>
-                        </AuthProvider>
-                      </PolloProvider>
-                    </LoteProvider>
-                  </HealthProvider>
-                </AlertProvider>
-              </main>
+function AppInner() {
+  const { user } = useAuth();
+
+  return (
+    <div className="min-h-screen flex flex-col md:flex-row w-full">
+      {user && (
+        <div className="sticky top-0 self-start z-50">
+          <AppSidebar />
+        </div>
+      )}
+      <div className={user ? 'flex md:hidden h-[3.5rem]' : 'h-0'} />
+      <div className="flex-1 flex flex-col">
+        {user && (
+          <header className="h-14 hidden md:flex items-center border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
+            <SidebarTrigger className="mr-4" />
+            <div className="flex items-center gap-2">
+              <h1 className="font-semibold text-foreground">Avicon</h1>
             </div>
-          </div>
-        </SidebarProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+          </header>
+        )}
+        <main className="flex-1 overflow-auto">
+          <AlertProvider>
+            <HealthProvider>
+              <LoteProvider>
+                <PolloProvider>
+                  <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+
+                    {/* Protected routes */}
+                    <Route path="/" element={<RequireAuth><Dashboard /></RequireAuth>} />
+                    <Route path="/lotes" element={<RequireAuth><LotesPage /></RequireAuth>} />
+                    <Route path="/lotesDetail" element={<RequireAuth><LoteDetail /></RequireAuth>} />
+                    <Route path="/lotes/:id" element={<RequireAuth><LoteDetail /></RequireAuth>} />
+                    <Route path="/pollos" element={<RequireAuth><PollosPage /></RequireAuth>} />
+                    <Route path="/salud" element={<RequireAuth><SaludPage /></RequireAuth>} />
+                    <Route path="/alertas" element={<RequireAuth><AlertasPage /></RequireAuth>} />
+                    <Route path="/reportes" element={<RequireAuth><ReportesPage /></RequireAuth>} />
+                    <Route path="*" element={<RequireAuth><NotFound /></RequireAuth>} />
+                  </Routes>
+                </PolloProvider>
+              </LoteProvider>
+            </HealthProvider>
+          </AlertProvider>
+        </main>
+      </div>
+    </div>
+  );
+}
 
 export default App;
 
