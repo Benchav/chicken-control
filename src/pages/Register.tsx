@@ -24,8 +24,8 @@ const Register = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-cover" style={{ backgroundImage: `url(${"https://www.shutterstock.com/image-photo/this-beautiful-image-showcases-freerange-600nw-2302119921.jpg"})` }}>
       <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Crear Cuenta</CardTitle>
+        <CardHeader className='text-center'>
+          <CardTitle>Crear Cuenta en Avicon</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handle} className="space-y-4">
@@ -43,8 +43,8 @@ const Register = () => {
             </div>
             {error && <div className="text-destructive">{error}</div>}
             <div className="flex justify-between items-center">
-              <Button type="submit">Registrar</Button>
               <Button variant="link" onClick={() => navigate('/login')}>Ya tengo cuenta</Button>
+              <Button type="submit">Registrar</Button>
             </div>
           </form>
         </CardContent>
