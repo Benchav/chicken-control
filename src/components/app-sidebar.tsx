@@ -7,6 +7,7 @@ import {
   AlertTriangle,
   FileText,
   Menu,
+  LogOut,
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -163,8 +164,9 @@ function LogoutButton() {
   const navigate = useNavigate();
   if (!user) return null;
   return (
-    <Button variant="ghost" onClick={() => { logout(); navigate('/login'); }}>
+    <Button className="bg-red-500 text-white" variant="secondary" onClick={() => { logout(); navigate('/login'); }}>
       Cerrar sesión
+      <LogOut className="h-4 w-2"/>
     </Button>
   );
 }
