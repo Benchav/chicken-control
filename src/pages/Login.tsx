@@ -21,7 +21,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
+    <div className="min-h-screen flex items-center bg-cover justify-center p-6" style={{ backgroundImage: `url(${"https://www.shutterstock.com/image-photo/this-beautiful-image-showcases-freerange-600nw-2302119921.jpg"})` }}>
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Ingresar</CardTitle>
