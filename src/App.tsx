@@ -57,8 +57,9 @@ function AppInner() {
         {user && (
           <header className="h-14 hidden md:flex items-center border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
             <SidebarTrigger className="mr-4" />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 justify-between w-full">
               <h1 className="font-semibold text-foreground">Avicon</h1>
+               <p>Bienvenido {user.name}</p>
             </div>
           </header>
         )}
