@@ -10,6 +10,7 @@ import { Health } from "@/models/health.model";
 import { useAlertContext } from "@/contexts/AlertContext";
 import { AlertPriority } from "@/models/alertPriority.model";
 import { AlertType } from "@/models/alertType.model";
+import { useNavigate } from "react-router-dom";
 
 // ✅ Helper para mapear el tipo de alerta (por si viene como string o enum)
 const mapTipo = (
@@ -36,6 +37,7 @@ export default function Dashboard() {
   const { lotes, loadingLotes, errorLotes } = useLoteContext();
   const { pollos, loadingPollos, errorPollos } = usePolloContext();
 
+  const navigate = useNavigate();
   const alertasRecientes = [...alerts]
     .sort(
       (a, b) =>
@@ -173,7 +175,7 @@ export default function Dashboard() {
                     timestamp={new Date(alerta.fechaCreacion).toLocaleString()}
                     actionLabel="Ver detalles"
                     onAction={() =>
-                      console.log(`Ver detalles de ${alerta.titulo}`)
+                      navigate('/alertas')
                     }
                   />
                 ))
