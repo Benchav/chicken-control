@@ -1,24 +1,24 @@
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   Plus,
   Edit,
@@ -26,21 +26,22 @@ import {
   Users,
   TrendingUp,
   AlertTriangle,
-} from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { Lote } from "@/models/lote.model"
-import { Status } from "@/models/status.model"
-import { useLoteContext } from "@/contexts/LoteContext"
-import { useNavigate } from "react-router-dom"
+  Download,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Lote } from "@/models/lote.model";
+import { Status } from "@/models/status.model";
+import { useLoteContext } from "@/contexts/LoteContext";
+import { useNavigate } from "react-router-dom";
 
 export default function LotesPage() {
   const { lotes, addLote, updateLote, deleteLote, loadingLotes, errorLotes } =
-    useLoteContext()
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [editingLote, setEditingLote] = useState<Lote | null>(null)
-  const { toast } = useToast()
+    useLoteContext();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingLote, setEditingLote] = useState<Lote | null>(null);
+  const { toast } = useToast();
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     nombre: "",
     cantidadInicial: "",
@@ -50,7 +51,7 @@ export default function LotesPage() {
     pesoPromedio: "",
     mortalidad: "",
     observaciones: "",
-  })
+  });
 
   const resetForm = () => {
     setFormData({
@@ -62,12 +63,12 @@ export default function LotesPage() {
       pesoPromedio: "",
       mortalidad: "",
       observaciones: "",
-    })
-    setEditingLote(null)
-  }
+    });
+    setEditingLote(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     const data: Lote = {
       id: editingLote ? editingLote.id : Date.now().toString(),
@@ -80,35 +81,35 @@ export default function LotesPage() {
       pesoPromedio: parseFloat(formData.pesoPromedio) || 0,
       mortalidad: parseFloat(formData.mortalidad) || 0,
       observaciones: formData.observaciones,
-    }
+    };
 
     try {
       if (editingLote) {
-        await updateLote(data)
+        await updateLote(data);
         toast({
           title: "Lote actualizado",
           description: "Los datos del lote han sido actualizados exitosamente",
-        })
+        });
       } else {
-        await addLote(data)
+        await addLote(data);
         toast({
           title: "Lote creado",
           description: "El nuevo lote ha sido creado exitosamente",
-        })
+        });
       }
-      setIsDialogOpen(false)
-      resetForm()
+      setIsDialogOpen(false);
+      resetForm();
     } catch {
       toast({
         title: "Error",
         description: "No se pudo guardar el lote",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const handleEdit = (lote: Lote) => {
-    setEditingLote(lote)
+    setEditingLote(lote);
     setFormData({
       nombre: lote.nombre,
       cantidadInicial: lote.cantidadInicial.toString(),
@@ -118,65 +119,67 @@ export default function LotesPage() {
       pesoPromedio: lote.pesoPromedio.toString(),
       mortalidad: lote.mortalidad.toString(),
       observaciones: lote.observaciones,
-    })
-    setIsDialogOpen(true)
-  }
+    });
+    setIsDialogOpen(true);
+  };
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteLote(id)
+      await deleteLote(id);
       toast({
         title: "Lote eliminado",
         description: "El lote ha sido eliminado del sistema",
         variant: "destructive",
-      })
+      });
     } catch {
       toast({
         title: "Error",
         description: "No se pudo eliminar el lote",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const getEstadoBadge = (estado: string) => {
     const variants = {
       activo: "default",
       completado: "secondary",
       suspendido: "destructive",
-    }
-    return variants[estado as keyof typeof variants] || "default"
-  }
+    };
+    return variants[estado as keyof typeof variants] || "default";
+  };
 
   const getEdadEnSemanas = (fechaInicio: string) => {
-    const inicio = new Date(fechaInicio)
-    const ahora = new Date()
-    const diferencia = ahora.getTime() - inicio.getTime()
-    return Math.floor(diferencia / (1000 * 60 * 60 * 24 * 7))
-  }
+    const inicio = new Date(fechaInicio);
+    const ahora = new Date();
+    const diferencia = ahora.getTime() - inicio.getTime();
+    return Math.floor(diferencia / (1000 * 60 * 60 * 24 * 7));
+  };
 
   if (loadingLotes)
     return (
       <div className="flex justify-center items-center h-screen text-muted-foreground">
         Cargando lotes...
       </div>
-    )
+    );
 
   if (errorLotes)
     return (
       <div className="flex justify-center items-center h-screen text-destructive">
         {errorLotes}
       </div>
-    )
+    );
 
-  const lotesActivos = lotes.filter((l) => l.estado === Status.ACTIVE)
+  const lotesActivos = lotes.filter((l) => l.estado === Status.ACTIVE);
 
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Gestión de Lotes</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Gestión de Lotes
+          </h1>
           <p className="text-muted-foreground">
             Administra y monitorea todos los lotes de pollos de engorde
           </p>
@@ -276,7 +279,9 @@ export default function LotesPage() {
                     <SelectContent>
                       <SelectItem value={Status.ACTIVE}>Activo</SelectItem>
                       <SelectItem value={Status.DONE}>Completado</SelectItem>
-                      <SelectItem value={Status.SUSPENDED}>Suspendido</SelectItem>
+                      <SelectItem value={Status.SUSPENDED}>
+                        Suspendido
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -334,6 +339,27 @@ export default function LotesPage() {
           </DialogContent>
         </Dialog>
       </div>
+      <h3>Recomendaciones para empezar de la mejor manera</h3>
+      <div className="flex flex-wrap gap-2">
+        <Button className="rounded-full gap-2 px-6" size="lg" asChild>
+          <a href="/manual_avicultura.pdf" download="Manual de Avicultura">
+            <Download className="w-4 h-4" />
+            <span>Manual de Avicultura</span>
+          </a>
+        </Button>
+        <Button className="rounded-full gap-2 px-6" size="lg" asChild>
+          <a href="/manual_avicultura2.pdf" download="Manual de Avicultura 2">
+            <Download className="w-4 h-4" />
+            <span>Manual de Avicultura 2</span>
+          </a>
+        </Button>
+        <Button className="rounded-full gap-2 px-6" size="lg" asChild>
+          <a href="/manual_produccion.pdf" download="Manual de Produccion">
+            <Download className="w-4 h-4" />
+            <span>Manual de Produccion</span>
+          </a>
+        </Button>
+      </div>
 
       {/* Estadísticas Resumen */}
       <div className="grid gap-4 md:grid-cols-4">
@@ -352,7 +378,9 @@ export default function LotesPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Pollos Activos</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pollos Activos
+            </CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -369,7 +397,9 @@ export default function LotesPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Mortalidad Promedio</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Mortalidad Promedio
+            </CardTitle>
             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -380,7 +410,9 @@ export default function LotesPage() {
               ).toFixed(1)}
               %
             </div>
-            <p className="text-xs text-muted-foreground">Últimos lotes activos</p>
+            <p className="text-xs text-muted-foreground">
+              Últimos lotes activos
+            </p>
           </CardContent>
         </Card>
 
@@ -408,10 +440,16 @@ export default function LotesPage() {
           <Card key={lote.id} className="transition-all hover:shadow-md">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold cursor-pointer" onClick={() => navigate(`/lotes/${lote.id}`)}>
+                <CardTitle
+                  className="text-lg font-semibold cursor-pointer"
+                  onClick={() => navigate(`/lotes/${lote.id}`)}
+                >
                   {lote.nombre}
                 </CardTitle>
-                <Badge onClick={() => navigate(`/lotes/${lote.id}`)} variant={getEstadoBadge(lote.estado) as any}>
+                <Badge
+                  onClick={() => navigate(`/lotes/${lote.id}`)}
+                  variant={getEstadoBadge(lote.estado) as any}
+                >
                   {lote.estado}
                 </Badge>
               </div>
@@ -486,5 +524,5 @@ export default function LotesPage() {
         ))}
       </div>
     </div>
-  )
+  );
 }
