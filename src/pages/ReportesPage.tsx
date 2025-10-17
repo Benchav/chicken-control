@@ -666,7 +666,7 @@ export default function ReportesPage() {
                         <TableCell>{lote.pesoFinal}kg</TableCell>
                         <TableCell><span className={lote.mortalidad > 6 ? "text-destructive" : lote.mortalidad > 4 ? "text-warning" : "text-success"}>{lote.mortalidad}%</span></TableCell>
                         <TableCell>{lote.conversion}:1</TableCell>
-                        <TableCell>${(lote.utilidad / 1000000).toFixed(1)}M</TableCell>
+                        <TableCell>C${(lote.utilidad / 1000000).toFixed(1)}K</TableCell>
                         <TableCell><Badge variant={lote.estado === "completado" ? "secondary" : "default"}>{lote.estado}</Badge></TableCell>
                       </TableRow>
                     ))}
