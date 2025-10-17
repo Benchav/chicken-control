@@ -535,7 +535,7 @@ export default function ReportesPage() {
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{(reporteActual.utilidadNeta / 1000000).toFixed(1)}M</div>
+                <div className="text-2xl font-bold">{(reporteActual.utilidadNeta / 1000000).toFixed(1)}</div>
                 <p className="text-xs text-success">+18% vs mes anterior</p>
               </CardContent>
             </Card>
@@ -680,8 +680,8 @@ export default function ReportesPage() {
         {/* Financiero */}
         <TabsContent value="financiero" className="space-y-6">
           <div className="grid gap-4 md:grid-cols-3">
-            <Card><CardHeader><CardTitle className="text-lg">Ingresos Brutos</CardTitle></CardHeader><CardContent><div className="text-3xl font-bold text-success">{(reporteActual.ingresosBrutos / 1000000).toFixed(1)}M</div><p className="text-sm text-muted-foreground mt-2">Período {selectedPeriodo}</p></CardContent></Card>
-            <Card><CardHeader><CardTitle className="text-lg">Costos de Producción</CardTitle></CardHeader><CardContent><div className="text-3xl font-bold text-destructive">{(reporteActual.costosProduccion / 1000000).toFixed(1)}M</div><p className="text-sm text-muted-foreground mt-2">{((reporteActual.costosProduccion / reporteActual.ingresosBrutos) * 100).toFixed(1)}% de ingresos</p></CardContent></Card>
+            <Card><CardHeader><CardTitle className="text-lg">Ingresos Brutos</CardTitle></CardHeader><CardContent><div className="text-3xl font-bold text-success">{(reporteActual.ingresosBrutos / 1000000).toFixed(1)}K</div><p className="text-sm text-muted-foreground mt-2">Período {selectedPeriodo}</p></CardContent></Card>
+            <Card><CardHeader><CardTitle className="text-lg">Costos de Producción</CardTitle></CardHeader><CardContent><div className="text-3xl font-bold text-destructive">{(reporteActual.costosProduccion / 1000000).toFixed(1)}K</div><p className="text-sm text-muted-foreground mt-2">{((reporteActual.costosProduccion / reporteActual.ingresosBrutos) * 100).toFixed(1)}% de ingresos</p></CardContent></Card>
             <Card><CardHeader><CardTitle className="text-lg">Margen de Utilidad</CardTitle></CardHeader><CardContent><div className="text-3xl font-bold text-primary">{((reporteActual.utilidadNeta / reporteActual.ingresosBrutos) * 100).toFixed(1)}%</div><p className="text-sm text-muted-foreground mt-2">{(reporteActual.utilidadNeta / 1000000).toFixed(1)}M utilidad neta</p></CardContent></Card>
           </div>
 
@@ -694,7 +694,7 @@ export default function ReportesPage() {
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis dataKey="periodo" className="text-muted-foreground" fontSize={12} />
                     <YAxis className="text-muted-foreground" fontSize={12} />
-                    <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "var(--radius)" }} formatter={(value: any) => [`$${(value / 1000000).toFixed(1)}M`, ""]} />
+                    <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "var(--radius)" }} formatter={(value: any) => [`C$${(value / 1000000).toFixed(1)}K`, ""]} />
                     <Bar dataKey="ingresosBrutos" fill="hsl(var(--success))" name="Ingresos" />
                     <Bar dataKey="costosProduccion" fill="hsl(var(--destructive))" name="Costos" />
                     <Bar dataKey="utilidadNeta" fill="hsl(var(--primary))" name="Utilidad" />
