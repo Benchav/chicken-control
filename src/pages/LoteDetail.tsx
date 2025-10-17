@@ -591,7 +591,7 @@ const LoteDetail = () => {
         </Card> */}
       </div>
 
-      <div className="grid gap-4">
+      <div className="flex flex-col gap-4">
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Filtros</CardTitle>

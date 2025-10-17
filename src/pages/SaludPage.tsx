@@ -456,14 +456,14 @@ export default function SaludPage() {
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow>
+                    <TableRow className="text-sm">
                       <TableHead>Fecha</TableHead>
-                      <TableHead>Pollo</TableHead>
-                      <TableHead>Lote</TableHead>
+                      <TableHead className="font-medium">Pollo</TableHead>
+                      <TableHead className="hidden sm:table-cell">Lote</TableHead>
                       <TableHead>Tipo</TableHead>
-                      <TableHead>Diagnóstico</TableHead>
-                      <TableHead>Veterinario</TableHead>
-                      <TableHead>Próxima Revisión</TableHead>
+                      <TableHead className="hidden md:table-cell">Diagnóstico</TableHead>
+                      <TableHead className="hidden sm:table-cell">Veterinario</TableHead>
+                      <TableHead className="hidden sm:table-cell">Próxima Revisión</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -475,31 +475,18 @@ export default function SaludPage() {
 
                       return (
                         <TableRow key={registro.id}>
-                          <TableCell>
-                            {new Date(registro.fecha).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell className="font-medium">
-                            {registro.polloIdentificador}
-                          </TableCell>
-                          <TableCell>{registro.lote}</TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={tipoConfig.variant}
-                              className="gap-1"
-                            >
+                          <TableCell className="py-2 text-sm">{new Date(registro.fecha).toLocaleDateString()}</TableCell>
+                          <TableCell className="font-medium py-2 text-sm">{registro.polloIdentificador}</TableCell>
+                          <TableCell className="hidden sm:table-cell py-2 text-sm">{registro.lote}</TableCell>
+                          <TableCell className="py-2 text-sm">
+                            <Badge variant={tipoConfig.variant} className="gap-1">
                               <IconComponent className="h-3 w-3" />
                               {registro.tipoRegistro}
                             </Badge>
                           </TableCell>
-                          <TableCell>{registro.diagnostico}</TableCell>
-                          <TableCell>{registro.veterinario}</TableCell>
-                          <TableCell>
-                            {registro.proximaRevision
-                              ? new Date(
-                                  registro.proximaRevision
-                                ).toLocaleDateString()
-                              : "-"}
-                          </TableCell>
+                          <TableCell className="hidden md:table-cell py-2 text-sm">{registro.diagnostico}</TableCell>
+                          <TableCell className="hidden sm:table-cell py-2 text-sm">{registro.veterinario}</TableCell>
+                          <TableCell className="hidden sm:table-cell py-2 text-sm">{registro.proximaRevision ? new Date(registro.proximaRevision).toLocaleDateString() : "-"}</TableCell>
                         </TableRow>
                       );
                     })}
