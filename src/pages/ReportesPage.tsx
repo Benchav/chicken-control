@@ -443,7 +443,7 @@ export default function ReportesPage() {
                           </span>
                         </TableCell>
                         <TableCell>{lote.conversion}:1</TableCell>
-                        <TableCell>${(lote.utilidad / 1000000).toFixed(1)}M</TableCell>
+                        <TableCell>C${(lote.utilidad / 1000000).toFixed(1)}K</TableCell>
                         <TableCell>
                           <Badge variant={lote.estado === "completado" ? "secondary" : "default"}>
                             {lote.estado}
@@ -467,7 +467,7 @@ export default function ReportesPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-success">
-                  ${(reporteActual.ingresosBrutos / 1000000).toFixed(1)}M
+                  C${(reporteActual.ingresosBrutos / 1000000).toFixed(1)}K
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
                   Período {selectedPeriodo}
@@ -481,7 +481,7 @@ export default function ReportesPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-destructive">
-                  ${(reporteActual.costosProduccion / 1000000).toFixed(1)}M
+                  C${(reporteActual.costosProduccion / 1000000).toFixed(1)}K
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
                   {((reporteActual.costosProduccion / reporteActual.ingresosBrutos) * 100).toFixed(1)}% de ingresos
@@ -498,7 +498,7 @@ export default function ReportesPage() {
                   {((reporteActual.utilidadNeta / reporteActual.ingresosBrutos) * 100).toFixed(1)}%
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
-                  ${(reporteActual.utilidadNeta / 1000000).toFixed(1)}M utilidad neta
+                  C${(reporteActual.utilidadNeta / 1000000).toFixed(1)}K utilidad neta
                 </p>
               </CardContent>
             </Card>
@@ -522,7 +522,7 @@ export default function ReportesPage() {
                         border: "1px solid hsl(var(--border))",
                         borderRadius: "var(--radius)"
                       }}
-                      formatter={(value: any) => [`$${(value / 1000000).toFixed(1)}M`, ""]}
+                      formatter={(value: any) => [`C$${(value / 1000000).toFixed(1)}K`, ""]}
                     />
                     <Bar dataKey="ingresosBrutos" fill="hsl(var(--success))" name="Ingresos" />
                     <Bar dataKey="costosProduccion" fill="hsl(var(--destructive))" name="Costos" />
