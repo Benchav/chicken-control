@@ -463,7 +463,7 @@ export default function PollosPage() {
                 />
               </div>
             </div>
-            <div className="sm:w-48">
+            <div className="w-full sm:w-48">
               <Select value={selectedLote} onValueChange={setSelectedLote}>
                 <SelectTrigger>
                   <SelectValue />
@@ -477,7 +477,7 @@ export default function PollosPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="sm:w-32">
+            <div className="w-full sm:w-32">
               <Select value={selectedEstado} onValueChange={setSelectedEstado}>
                 <SelectTrigger>
                   <SelectValue />
@@ -502,17 +502,18 @@ export default function PollosPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
+          {/* Desktop / tablet table */}
+          <div className="hidden sm:block overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="text-sm">
                   <TableHead>Identificador</TableHead>
-                  <TableHead>Lote</TableHead>
-                  <TableHead>Raza</TableHead>
-                  <TableHead>Edad</TableHead>
-                  <TableHead>Peso</TableHead>
+                  <TableHead className="hidden sm:table-cell">Lote</TableHead>
+                  <TableHead className="hidden md:table-cell">Raza</TableHead>
+                  <TableHead className="hidden sm:table-cell">Edad</TableHead>
+                  <TableHead className="hidden md:table-cell">Peso</TableHead>
                   <TableHead>Estado</TableHead>
-                  <TableHead>Última Revisión</TableHead>
+                  <TableHead className="hidden sm:table-cell">Última Revisión</TableHead>
                   <TableHead>Acciones</TableHead>
                 </TableRow>
               </TableHeader>
@@ -523,26 +524,24 @@ export default function PollosPage() {
 
                   return (
                     <TableRow key={pollo.id}>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-medium py-2 text-sm">
                         {pollo.identificador}
                       </TableCell>
-                      <TableCell>{pollo.lote}</TableCell>
-                      <TableCell>{pollo.raza}</TableCell>
-                      <TableCell>
+                      <TableCell className="hidden sm:table-cell py-2 text-sm">{pollo.lote}</TableCell>
+                      <TableCell className="hidden md:table-cell py-2 text-sm">{pollo.raza}</TableCell>
+                      <TableCell className="hidden sm:table-cell py-2 text-sm">
                         {getEdadEnSemanas(pollo.fechaNacimiento)} sem
                       </TableCell>
-                      <TableCell>
-                        {pollo.estado === "muerto"
-                          ? "-"
-                          : `${pollo.pesoActual}kg`}
+                      <TableCell className="hidden md:table-cell py-2 text-sm">
+                        {pollo.estado === "muerto" ? "-" : `${pollo.pesoActual}kg`}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="py-2 text-sm">
                         <Badge variant={estadoConfig.variant} className="gap-1">
                           <IconComponent className="h-3 w-3" />
                           {pollo.estado}
                         </Badge>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="hidden sm:table-cell py-2 text-sm">
                         {new Date(pollo.ultimaRevision).toLocaleDateString()}
                       </TableCell>
                       <TableCell>
@@ -596,6 +595,35 @@ export default function PollosPage() {
                 })}
               </TableBody>
             </Table>
+          </div>
+
+          {/* Mobile: compact cards */}
+          <div className="sm:hidden space-y-3">
+            {filteredPollos.map((pollo) => {
+              const estadoConfig = getEstadoBadge(pollo.estado);
+              const IconComponent = estadoConfig.icon;
+              return (
+                <Card key={pollo.id} className="p-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="text-sm font-medium">{pollo.identificador}</div>
+                      <div className="text-xs text-muted-foreground">{pollo.lote} • {pollo.raza}</div>
+                      <div className="text-xs text-muted-foreground">{getEdadEnSemanas(pollo.fechaNacimiento)} sem • {pollo.pesoActual}kg</div>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <Badge variant={estadoConfig.variant} className="gap-1 text-xs">
+                        <IconComponent className="h-3 w-3" />
+                        {pollo.estado}
+                      </Badge>
+                      <div className="flex gap-1">
+                        <Button variant="outline" size="sm" onClick={() => handleEdit(pollo)} className="h-7 w-7 p-0"><Edit className="h-3 w-3"/></Button>
+                        <Button variant="outline" size="sm" onClick={() => handleQuickStatusChange(pollo.id, Health.SICK)} className="h-7 w-7 p-0"><AlertTriangle className="h-3 w-3"/></Button>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
           </div>
         </CardContent>
       </Card>
